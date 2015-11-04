@@ -4,7 +4,7 @@
 \alias{scoresPlot}
 \title{Principal Components Analysis Scores Plot}
 \usage{
-scoresPlot(x, i, j, subpop = NULL, subcol = NULL)
+scoresPlot(x, i, j, pop, subcol = NULL)
 }
 \arguments{
 \item{x}{an output from \code{pcadapt} containing the scores.}
@@ -15,9 +15,9 @@ Default value is set to \code{1}.}
 \item{j}{an integer indicating onto which principal component the individuals are projected when the "scores" option is chosen.
 Default value is set to \code{2}.}
 
-\item{subpop}{a list of lists of indices specifying the subpopulations. This attributes specific colors to each subpopulations.}
-
 \item{subcol}{a list of colors for each subpopulation. If not specified, default colors will be used.}
+
+\item{subpop}{a list of lists of indices specifying the subpopulations. This attributes specific colors to each subpopulations.}
 }
 \description{
 \code{"scoresPlot"} plots the projection of the individuals onto the first two principal components.

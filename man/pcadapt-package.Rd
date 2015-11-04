@@ -2,33 +2,35 @@
 \alias{pcadapt-package}
 \docType{package}
 \title{
-	Principal Components Analysis for Outliers Detection.
+	Principal Component Analysis for Outlier Detection.
 }
 \description{
-This package has been developped to provide statistical tools for outliers detection based on Principal Components Analysis.
+This package has been developped to provide statistical tools for outlier detection based on Principal Component Analysis.
 }
 \details{
 \tabular{ll}{
 Package: \tab pcadapt\cr
 Type: \tab Package\cr
-Version: \tab 1.0\cr
-Date: \tab 2015-07-16\cr
+Version: \tab 2.0\cr
+Date: \tab 2015-10-26\cr
 License: \tab (>= 2)\cr
 }
-~~ An overview of how to use the package, including the most important functions ~~
+For an overview of how to use the package, please check the html document provided as a vignette by typing the following command in the \code{R} console:
+
+\code{browseVignette("pcadapt")} 
 }
 \author{
-Keurcien Luu, Michael Blum
+Keurcien Luu, Michael G.B. Blum
 
 Maintainer: Keurcien Luu <keurcien.luu@imag.fr>
 }
 \references{
-~~ Literature or other references for background information ~~
+Duforet-Frebourg, N., Luu, K., Laval, G., Bazin, E., & Blum, M. G. B. (2015). Detecting genomic signatures of natural selection with principal component analysis: application to the 1000 Genomes data. arXiv preprint arXiv:1504.04543.
 }
 \keyword{ package }
 \seealso{
-~~ Optional links to other man pages, e.g. ~~
+http://membres-timc.imag.fr/Michael.Blum/PCAdapt.html
 }
 \examples{
-x<-NULL
+## see ?pcadapt for examples
 }

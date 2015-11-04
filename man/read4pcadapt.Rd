@@ -2,18 +2,31 @@
 % Please edit documentation in R/utilities.R
 \name{read4pcadapt}
 \alias{read4pcadapt}
-\title{Multi-purpose read function}
+\title{pcadapt read function}
 \usage{
-read4pcadapt(x = NULL, option = "genotype")
+read4pcadapt(x = NULL, option = "genotype", header = FALSE, sep = "",
+  transpose = FALSE, mapheader = FALSE, mapsep = "\\t")
 }
 \arguments{
 \item{x}{can be a file path or a file name, depending on the chosen option.}
 
-\item{option}{a character string specifying the type of data going to be read.}
+\item{option}{a character string that specifies the type of data to be read: "genotype" (default), "ped" or "pool".}
+
+\item{header}{a logical value indicating whether the file contains the names of the variables as its first line.}
+
+\item{sep}{the field separator character.}
+
+\item{transpose}{a logical value indicating whether the pooled data has the right format, which is
+n rows and p columns where n is the number of populations and p is the number of genetic markers.}
+
+\item{mapheader}{a logical value indicating whether the map file contains the names of the variables as its first line.}
+
+\item{mapsep}{a character string that specifies the type of separator used when reading the data.}
 }
 \description{
-\code{read4pcadatp} allows the user to display individuals of the same pre-defined subpopulation with the same color when using the option
-\code{"scores"} in \code{pcadapt}. Creates a global variable storing the lists of indices for each subpopulation.
+\code{read4pcadapt} is a function which output may be read by the main function \code{pcadapt}. It currently supports two formats.
+The first one is a text file containing the genotype matrix with individuals in rows and genotype markers in columns (same format as for the \code{R} package LEA).
+The second supported format is the .ped format.
 }
 \examples{
 ## see also ?pcadapt for examples

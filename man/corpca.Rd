@@ -2,24 +2,26 @@
 % Please edit documentation in R/pcadapt.R
 \name{corpca}
 \alias{corpca}
-\title{Principal Components Analysis}
+\title{Principal Component Analysis based on the correlation matrix}
 \usage{
-corpca(data, K)
+corpca(data, K, scale = TRUE)
 }
 \arguments{
 \item{data}{a data matrix or a data frame.}
 
 \item{K}{an integer specifying the number of principal components that are retained.}
+
+\item{scale}{a logical value indicating whether the data has to be scaled.}
 }
 \description{
-\code{corpca} performs a principal components analysis on a dataset, and returns an object \code{x}
+\code{corpca} is an auxiliary function that performs principal components analysis on a dataset. It returns an object \code{x}
 which contains the loadings, the scores and the singular values of the \code{K} first principal components.
-It handles missing values in a dataset and actually computes the eigen elements of the rather small \code{n x n}
-covariance matrix. All these variables are accesible using
-the dollar sign (example : \code{stds <- x$neutral_sdev}).
+It handles missing values in a dataset and actually computes the eigen elements of the \code{n x n}
+covariance matrix, where \code{n} is the number of individuals.
 }
 \examples{
-x <- read4pcadapt("geno3pops",option="example")
-y <- pcadapt(x,K=3)
+data <- read4pcadapt("geno3pops",option="example")
+x <- corpca(data,K=3)
 }
+\keyword{internal}
 

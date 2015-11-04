@@ -4,21 +4,20 @@
 \alias{pval}
 \title{Principal Components p-values}
 \usage{
-pval(x, communality_test = FALSE)
+pval(x, method, K)
 }
 \arguments{
-\item{x}{an output of \code{pcadapt} containing the loadgins and the estimated standard deviations.}
+\item{x}{an output of \code{pcadapt} containing the test statistics.}
 
-\item{communality_test}{a logical value indicating whether a communality test should be performed. Default value set to \code{FALSE}.}
+\item{method}{a character string that specifies the method used to compute the p-values.}
 }
 \description{
-\code{pval} computes p-values for each principal component or for a set of principal components in the meta-analysis case.
+\code{pval} computes p-values for each genetic marker, depending on the test statistics distribution.
 }
 \examples{
-x <- replicate(1000, rnorm(100))
-x <- floor(abs(x))
-y <- pcadapt(x,K=3)
-pval(y)
+data <- read4pcadapt("geno3pops",option="example")
+x <- pcadapt(data,K=3)
+pval(x,method="mahalanobis",K=3)
 }
 \keyword{internal}
 

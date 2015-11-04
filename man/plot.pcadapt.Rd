@@ -5,7 +5,7 @@
 \title{pcadapt visualization tool}
 \usage{
 \method{plot}{pcadapt}(x, ..., option = NULL, K = NULL, i = 1, j = 2,
-  subpop = NULL, subcol = NULL, threshold = NULL, num_pc = NULL)
+  pop = attr(x, "pop"), subcol = NULL, threshold = NULL, num_pc = NULL)
 }
 \arguments{
 \item{x}{an object of class "pcadapt" generated with \code{pcadapt}.}
@@ -14,7 +14,7 @@
 
 \item{option}{a character string specifying the figures to be displayed. If \code{NULL} (the default), all three plots are printed.}
 
-\item{K}{an integer specifying the principal component of interest. \code{K} has to be specified uniquely when using the \code{neutral} option.}
+\item{K}{an integer specifying the principal component of interest. \code{K} has to be specified only when using the \code{loadings} option.}
 
 \item{i}{an integer indicating onto which principal component the individuals are projected when the "scores" option is chosen.
 Default value is set to \code{1}.}
@@ -22,13 +22,11 @@ Default value is set to \code{1}.}
 \item{j}{an integer indicating onto which principal component the individuals are projected when the "scores" option is chosen.
 Default value is set to \code{2}.}
 
-\item{subpop}{a list of lists of indices specifying the subpopulations. This attributes specific colors to each subpopulations.}
+\item{pop}{a list of lists of indices specifying the subpopulations. This attributes specific colors to each subpopulations.}
 
 \item{subcol}{a list of colors for each subpopulation. If not specified, default colors will be used.}
 
-\item{threshold}{a parameter which depends on the chosen option. When used with \code{"scores"}, it's the threshold which the user expects the false discovery rate
-to be under. For the \code{"qqplot"} option, it displays an addiotional bar which separates the SNPs with the highest p-values from the ones with
-lower p-values.}
+\item{threshold}{for the \code{"qqplot"} option, it displays an additional bar which shows the \code{threshold} percent of SNPs with smallest p-valuesseparates the SNPs with the highest p-values.}
 
 \item{num_pc}{an integer specifying the number of components to take into account in the scree plot. \code{num_axis} should be lower than \code{K}.
 By default, \code{num_axis = K}.}
@@ -36,15 +34,13 @@ By default, \code{num_axis = K}.}
 \description{
 \code{plot.pcadapt} is a method designed for objects of class \code{pcadapt}.
 It provides a plotting utile for quick visualization of a \code{pcadapt} object.
-Different options are available : \code{"screeplot"}, \code{"scores"}, \code{"neutral"}, \code{kurtosis},
+Different options are available : \code{"screeplot"}, \code{"scores"}, \code{"stat.distribution"},
 \code{"manhattan"} and \code{"qqplot"}.
 \code{"screeplot"} shows the decay of the singular values of the genotype matrix and provides
-a figure which may help in the choice of \code{K}.
+a figure to guide in the choice of \code{K}.
 \code{"scores"} plots the projection of the individuals onto the first two principal components.
-\code{"neutral"} displays the loadings histogram of the principal component of interest, as well as
-the estimated distribution of the loadings of the neutral SNPs.
-\code{"kurtosis"} plots the kurtosis as a function of the proportion of observations removed from the
-distribution of interest.
+\code{"stat.distribution"} displays the histogram of the selected test statistics, as well as
+the estimated distribution for the neutral SNPs.
 \code{"manhattan"} draws the Manhattan plot of the p-values associated with the principal component
 of interest.
 \code{"qqplot"} draws a Q-Q plot of the p-values associated with the principal component

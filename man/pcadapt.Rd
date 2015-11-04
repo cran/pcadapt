@@ -2,70 +2,83 @@
 % Please edit documentation in R/pcadapt.R
 \name{pcadapt}
 \alias{pcadapt}
-\title{Principal Components Analysis}
+\title{Principal Component Analysis for outlier detection}
 \usage{
-pcadapt(data = NULL, file = NULL, K, communality_test = FALSE,
-  ploidy = 2, minmaf = 0.05)
+pcadapt(data = NULL, K, method = "mahalanobis", data.type = "genotype",
+  minmaf = 0.05, ploidy = 2)
 }
 \arguments{
-\item{data}{a data matrix or a data frame.}
+\item{data}{a data matrix or a data frame if `PCAdapt = FALSE`. The name of the file generated with the \code{C} software PCAdapt (with no extension) if \code{PCAdapt=TRUE}.}
 
-\item{file}{the name of the file which the data are to be read from. Basically, the file generated with PCAdapt which has no extension.}
+\item{K}{an integer specifying the number of principal components to retain. Not necessary if \code{PCAdapt=TRUE}.}
 
-\item{K}{an integer specifying the number of principal components to retain.}
+\item{method}{a character string that specifies the test statistic to compute the p-values. Four statistics are currently available,
+\code{"mahalanobis"}, \code{"communality"}, \code{"euclidean"} and \code{"componentwise"}.}
 
-\item{communality_test}{a logical value indicating whether a communality test should be performed. Default value set to \code{FALSE}.}
+\item{data.type}{a character string that specifies the type of data being read, either a \code{genotype} matrix (default), either a \code{frequency} matrix.}
+
+\item{minmaf}{a value between \code{0} and \code{0.5} specifying the threshold of minor allele frequencies above which p-values are computed.}
 
 \item{ploidy}{an integer specifying the ploidy of the individuals.}
-
-\item{minmaf}{a value between \code{0} and \code{0.5} specifying the threshold under which the frequencies are considered minor allele frequencies.}
 }
 \value{
 The returned value \code{x} is an object of class \code{pcadapt}.
-The different fields can be viewed using the dollar sign (example: \code{x$neutral_sdev}).
-The returned value contains the following components:
-\item{loadings}{is a matrix containing the correlations between each genetic marker and each PC.}
+The different fields can be viewed using the dollar sign (example: \code{x$pvalues}).
+The returned value contains the following components, depending on the choice of method:
+\item{stat}{is a vector containing the test statistics associated with the chosen method for each genetic marker. \code{NULL} if \code{method="componentwise"}. \code{method} default value set to \code{mahalanobis}.}
+\item{pvalues}{is a data frame containing p-values.}
+\item{maf}{is a vector containing minor allele frequencies.}
+\item{chi2_stat}{is a vector containing the scaled statistics equal to the values contained in \code{stats} divided by \code{gif} (\code{method}="mahalanobis","euclidean"). It should follow a chi-squared distribution with K degrees of freedom.}
+\item{gif}{is a numerical value corresponding to the genomic inflation factor estimated from \code{stat}}
 \item{scores}{is a matrix corresponding to the projections of the individuals onto each PC.}
+\item{loadings}{is a matrix containing the correlations between each genetic marker and each PC.}
 \item{singular_values}{contains the ordered squared root of the proportion of variance explained by each PC.}
-\item{pvalues}{is a data frame containing the p-values for the \code{K} first principal components.}
-\item{communality}{contains the communality for each PC which corresponds to the proportion of variance explained by the first \code{K} PCs.}
-\item{p}{is a data frame with \code{K} columns. Gives the proportions removed from the loadings distributions in order to estimate the standard deviation of the neutral markers.}
-\item{q}{is a data frame with \code{K} columns. Each column of \code{q} represents the kurtosis evaluated on the distribution of the loadings for each cut-off provided by \code{p}.}
-\item{proportion_removed}{is a list of size \code{K} corresponding to the proportions of markers to remove from the loading distributions to match the kurtosis expected for a Gaussian distribution.}
 }
 \description{
-\code{pcadapt} performs principal component analysis and compute P-values to test for selection as indicated
-by significant correlations between genetic variation and principal components. \code{pcadapt} also allows the user to read PCAdapt outputs
-for further analysis in \code{R}. Returns an object of class \code{pcadapt}.
+\code{pcadapt} performs principal component analysis and computes p-values to test for outliers. The test for
+outliers is based on the correlations between genetic variation and the first \code{K} principal components.
+\code{pcadapt} also allows the user to read outputs from the software PCAdapt, which is implemented in \code{C}. Using the \code{C} software
+might be useful for very large datasets. \code{pcadapt} also handles Pool-seq data for which the statistical analysis is
+performed on the genetic markers frequencies. Returns an object of class \code{pcadapt}.
 }
 \details{
 First, a principal component analysis is performed on the scaled and centered genotype data. To account for missing
 data, the correlation matrix between individuals is computed using only the markers available for each
 pair of individuals. The scores and the loadings (correlations between PCs and genetic markers) are then found using
-the \code{\link{eigen}} function. The p-values are then computed based on the matrix of loadings. The loadings of the neutral markers
-are assumed to follow a centered Gaussian distribution. The standard deviation of the Gaussian distribution
-is estimated after removing a proportion of genetic markers with the largest loadings (in absolute values).
-The removal proportion is the smallest percentage such that the kurtosis of the truncated distribution of the loadings matches the kurtosis
-of a Gaussian distribution, which is equal to 3. The standard deviation of the loadings is finaly estimated using the maximum likelihood of a truncated Gaussian distribution.
+the \code{\link{eigen}} function. Depending on the specified \code{method}, different test statistics can be used.
+
+\code{mahalanobis} (default): the Mahalanobis distance is computed for each genetic marker using a robust
+estimate of the mean and of the covariance matrix between the \code{K} vectors of loadings.
+
+\code{communality}: the communality statistic measures the proportion of variance explained by the first \code{K} PCs.
+
+\code{euclidean}: the Euclidean distance between the \code{K} scaled loadings of each genetic marker and the mean of the \code{K} vectors of scaled loadings is computed.
+Scaled loadings correspond to loadings divided by a robust estimate of their standard deviation.
+
+\code{componentwise}: returns a matrix of scaled loadings. Scaled loadings correspond to loadings divided by a robust estimate of their standard deviation.
+
+To compute p-values, test statistics (\code{stat}) are divided by a genomic inflation factor (\code{gif}) when \code{method="mahalanobis","euclidean"}. When \code{method="communality"}, the test
+statistic is first multiplied by \code{K} and divided by the percentage of variance explained by the first \code{K} PCs before accounting for genomic inflation factor. When using \code{method="mahalanobis","communality","euclidean"}, the scaled statistics (\code{chi2_stat}) should follow a chi-squared
+distribution with \code{K} degrees of freedom. When using \code{method="componentwise"}, the rescaled loadings should follow a standard normal distribution.
+For Pool-seq data, \code{pcadapt} provides p-values based on the Mahalanobis distance for each SNP.
 }
 \examples{
-x <- read4pcadapt("geno3pops",option="example")
-x <- floor(abs(x))
-y <- pcadapt(x,K=10)
+data <- read4pcadapt("geno3pops",option="example")
+x <- pcadapt(data,K=10)
 
 ## Screeplot
-plot(y,option="screeplot")
+plot(x,option="screeplot")
 
 ## PCA
-plot(y,option="scores")
+plot(x,option="scores")
 
 ## Neutral SNPs distribution
-plot(y,option="neutral",K=1)
+plot(x,option="stat.distribution",K=2)
 
 ## Manhattan Plot
-plot(y,option="manhattan",K=1)
+plot(x,option="manhattan")
 
 ## Q-Q Plot
-plot(y,option="qqplot",K=1)
+plot(x,option="qqplot")
 }
 

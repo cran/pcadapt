@@ -4,12 +4,21 @@
 \alias{read.genotype}
 \title{Read files for pcadapt}
 \usage{
-read.genotype(file, option = NULL)
+read.genotype(file, option = NULL, header = FALSE, sep = " ", mapheader,
+  mapsep = NULL)
 }
 \arguments{
 \item{file}{the name of the file without the extention which the data are to be read from.}
 
 \item{option}{a character string that specifies which type of data the user is willing to read.}
+
+\item{header}{a logical value indicating whether the file contains the names of the variables as its first line.}
+
+\item{sep}{the field separator character.}
+
+\item{mapheader}{a logical value indicating whether the map file contains the names of the variables as its first line.}
+
+\item{mapsep}{the field separator character for the map file.}
 }
 \description{
 \code{read.genotype} returns the genotype matrix for different types of files.

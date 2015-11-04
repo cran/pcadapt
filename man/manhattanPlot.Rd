@@ -4,16 +4,13 @@
 \alias{manhattanPlot}
 \title{Manhattan Plot}
 \usage{
-manhattanPlot(x, K, alpha)
+manhattanPlot(x, K)
 }
 \arguments{
-\item{x}{an object of class "outlier" generated with \code{outlier} containing the p-values of interest.}
-
-\item{alpha}{a real number between \code{0} et \code{1}.}
+\item{x}{an object of class "pcadapt" generated with \code{pcadapt} containing the p-values of interest.}
 }
 \description{
-\code{manhattanPlot} displays a Manhattan plot which represents the p-values for each SNP for a particular principal component (or set of
-principal components in the communality test case).
+\code{manhattanPlot} displays a Manhattan plot which represents the p-values for each SNP for a particular test statistic.
 }
 \examples{
 ## see ?pcadapt for examples

@@ -13,8 +13,23 @@ vignette: >
 title: "pcadapt"
 output: html_vignette
 ---
+---
+title: "pcadapt"
+author: "Keurcien Luu, Michael G.B. Blum"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{pcadapt}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\usepackage[utf8]{inputenc}
+---
 
-**pcadapt** has been developped to detect genetic markers involved in biological adaptation. **pcadapt** provides statistical tools for outlier detection based on Principal Component Analysis (PCA).
+---
+title: "pcadapt"
+output: html_vignette
+---
+
+**pcadapt** has been developed to detect genetic markers involved in biological adaptation. **pcadapt** provides statistical tools for outlier detection based on Principal Component Analysis (PCA).
 
 In the following, we show how the **pcadapt** package can perform genome scans for selection. The package contains two examples: **geno3pops** (genotype data) and **pool3pops** (Pool-seq data). The **geno3pops** data contain simulated genotypes for 1,500 diploid markers. A total of 150 individuals coming from three different populations were genotyped. Simulations were performed with [simuPOP](http://simupop.sourceforge.net/) using a divergence model assuming that 200 SNPs confer a selective advantage. The **pool3pops** data contain simulated allele frequencies in 3 populations for 1,500 diploid markers. Allele frequencies have been computed based on the **geno3pops** dataset.
 
@@ -29,9 +44,11 @@ library(pcadapt)
 library(pcadapt)
 ```
 
-Sections A-E explain how to use the package for genotype data. Section F additionnaly explains how to use the package for Pool-seq data, but previous sections should also be read. Section G explains advanced usage of the package.
+Sections A-E explain how to use the package for genotype data. Section F additionally explains how to use the package for Pool-seq data, but previous sections should also be read. Section G explains advanced usage of the package.
 
 # A. Reading the genotype data
+
+## A.1. The `read4pcadapt` function
 
 The **geno3pops** example data can be loaded using the following command. 
 
@@ -58,7 +75,15 @@ The second supported format is the standard .ped format. To read a .ped file, th
 data <- read4pcadapt(x="path_to_directory/mydata",option="ped")
 ```
 
-**NB** : in both cases, standard `read.table` options `header` and `sep` can be specified in the `read4pcadapt` function. For .ped files, the separator for the .map file can also be specified using the option `mapsep`.   
+**NB**: in both cases, standard `read.table` options `header` and `sep` can be specified in the `read4pcadapt` function. For .ped files, the separator for the .map file can also be specified using the option `mapsep`.   
+
+## A.2. How to handle missing values
+
+The `read4pcadapt` function can account for missing data. By default, the function assumes that missing data are coded with `-9`, `NA` or `NaN`. To specify other coding values, use the option `na.strings` in the `read4pcadapt` function. For example, if missing values are coded with `NA_code_1` and `NA_code_2`, use the following command line
+
+```
+data <- read4pcadapt(x="path_to_directory/mydata",na.strings=c("NA_code_1","NA_code_2"))
+```
 
 # B. Choosing the number `K` of Principal Components
 
@@ -72,7 +97,7 @@ x <- pcadapt(data,K=20)
 
 ## B.1. Scree plot
 
-The 'scree plot' displays the percentage of variance that is explained by each PC. The ideal pattern in a scree plot is a steep curve followed by a bend and an almost horizontal line. The recommended value of `K` corresponds to the largest value of `K` before the plateau is reached. In the provided example, `K=2` is the optimal choice of `K`. The plot functions displays a scree plot:
+The 'scree plot' displays the percentage of variance that is explained by each PC. The ideal pattern in a scree plot is a steep curve followed by a bend and an almost horizontal line. The recommended value of `K` corresponds to the largest value of `K` before the plateau is reached. In the provided example, `K=2` is the optimal choice of `K`. The plot function displays a scree plot:
 
 ```{r,fig.width=7,fig.height=5,fig.align='center'}
 plot(x,option="screeplot")
@@ -86,7 +111,7 @@ plot(x,option="screeplot",num_pc=4)
 
 ## B.2. Score plot
 
-Another option to choose the number of PCs is based on the 'score plot' that displays population structure. The score plot displays the projections of the individuals onto the specified principal components. Using the score plot, the choice of `K` can be limited to the values of `K` that correspond to a relevant level of population structure.
+Another option to choose the number of PCs is based on the 'score plot' that displays population structure. The score plot displays the projections of the individuals onto the specified principal components. Using the score plot, the choice of  `K` can be limited to the values of `K` that correspond to a relevant level of population structure.
 
 When population labels are known, individuals of the same populations can be displayed with the same color using the `pop` argument, which should contain the list of indices of the populations of origin. In the **geno3pops** example, the first population is composed of the first 50 individuals, the second population of the next 50 individuals, and so on. Thus, a population file that can be provided to the argument `pop` should look like this:
 
@@ -111,11 +136,11 @@ plot(x,option="scores",i=3,j=4,pop=poplist)
  
 # C. Computing the test statistic based on PCA
 
-For a given SNP, the test statistic is based on the loadings which are defined as the correlations between the SNP and the PCs. The test statistic for detecting outlier SNPs is the Mahalanobis distance, which is a multi-dimensional approach that measures how distant is a point from the mean. Denoting by $\rho^j = (\rho_1^j,\dots,\rho_K^j)$ the vector of `K` correlations between the $j$-th SNP and the first `K` PCs, the Mahalanobis distance is defined as 
+For a given SNP, the test statistic is based on the loadings that are defined as the correlations between the SNP and the PCs. The test statistic for detecting outlier SNPs is the Mahalanobis distance, which is a multi-dimensional approach that measures how distant is a point from the mean. Denoting by $\rho^j = (\rho_1^j, \dots, \rho_K^j)$ the vector of `K` correlations between the $j$-th SNP and the first `K` PCs, the Mahalanobis distance is defined as 
 
 $$D_j = \sqrt{(\rho^j - \bar{\rho})\Sigma^{-1}(\rho^j - \bar{\rho})}$$
 
-where $\bar{\rho}$ and $\Sigma$ are robust estimates of the mean and of the covariance matrix. Once divided by a constant $\lambda$ called the genomic inflation factor, the scaled distances $D_j/\lambda$  should have a chi-square distribution with `K` degrees of freedom under the assumption that there are no outlier. 
+where $\bar{\rho}$ and $\Sigma$ are robust estimates of the mean and of the covariance matrix. Once divided by a constant $\lambda$ called the genomic inflation factor, the scaled distances $D_j/\lambda$ should have a chi-square distribution with `K` degrees of freedom under the assumption that there are no outlier. 
 
 For the **geno3pops** data, it was found in section B that `K=2` corresponds to the optimal choice of the number of PCs.
 
@@ -163,7 +188,7 @@ plot(x,option="manhattan")
 
 ## D.2. Q-Q Plot
 
-The user is also given the possibility to check the distribution of the p-values using a Q-Q plot :
+The user is also given the possibility to check the distribution of the p-values using a Q-Q plot 
 
 ```{r,fig.width=7,fig.height=5,fig.align='center'}
 plot(x,option="qqplot",threshold=0.1)
@@ -181,7 +206,7 @@ A histogram of p-values confirms that most of the p-values follow the uniform di
 hist(x$pvalues,xlab="p-values",main=NULL)
 ```
 
-The presence of outliers is also visible when plotting an histogram of the test statistic $D_j$.
+The presence of outliers is also visible when plotting a histogram of the test statistic $D_j$.
 
 ```{r,fig.width=7,fig.height=5,fig.align='center'}
 plot(x,option="stat.distribution")
@@ -189,7 +214,7 @@ plot(x,option="stat.distribution")
 
 # E. Choosing a cutoff for outlier detection
 
-To provide a list of outliers, we recommend to use the `R` package [qvalue](http://www.bioconductor.org/packages/release/bioc/html/qvalue.html), transforming the p-values into q-values. To install and load the package, type the following command lines:
+To provide a list of outliers, we recommend using the `R` package [qvalue](http://www.bioconductor.org/packages/release/bioc/html/qvalue.html), transforming the p-values into q-values. To install and load the package, type the following command lines:
 
 ```
 ## try http if https is not available
@@ -214,21 +239,21 @@ print(outliers)
 
 # F. Pool-seq Data
 
-The package also handles Pool-seq data. A Pool-seq example is provided in the package and can be loaded as follows :
+The package also handles Pool-seq data. A Pool-seq example is provided in the package and can be loaded as follows:
 
 ```{r}
 pooldata <- read4pcadapt("pool3pops",option="example",transpose=FALSE)
 ```
 
-For your own dataset, asssuming the data file is called "mydata" and is available at "path_to_directory", the command line to read the `(n,L)` frequency matrix data (where `n` is the number of populations and `L` is the number of genetic markers) is
+For your own dataset, assuming the data file is called "mydata" and is available at "path_to_directory", the command line to read the `(n,L)` frequency matrix data (where `n` is the number of populations and `L` is the number of genetic markers) is
 
 ```
 pooldata <- read4pcadapt("path_to_directory/mydata",transpose=FALSE)
 ```
 
-If the input data is `(L,n)`, set `transpose` to `TRUE` to convert to the right format. 
+If the input data is a `(L,n)` matrix, set `transpose` to `TRUE` in the `read4pcadapt` function.
 
-As for genotype data, the `pcadapt` function performs two successive tasks. First PCA is performed on the centered matrix of allele frequencies (not scaled). And the second stage consists of computing test statistics (Mahalanobis distances by default) and p-values based on the covariances between allele frequencies and the first `K` PCs. By default, the function assumes that the number `K` of PCs is equal to the number of populations minus one (`n-1`). The user can use a smaller number of PCs (`K` < `n-1`) by looking at the screeplot.
+As for genotype data, the `pcadapt` function performs two successive tasks. First PCA is performed on the centered matrix of allele frequencies (not scaled). And the second stage consists of computing test statistics (Mahalanobis distances by default) and p-values based on the covariances between allele frequencies and the first `K` PCs. By default, the function assumes that the number `K` of PCs is equal to the number of populations minus one (`K=n-1`). The user can use a smaller number of PCs (`K` < `n-1`) by determining the optimal number of PCs using the scree plot.
 
 When calling the `pcadapt` function, make sure to specify `data.type ="pool"`. 
 
@@ -236,21 +261,96 @@ When calling the `pcadapt` function, make sure to specify `data.type ="pool"`.
 xpool <- pcadapt(pooldata,data.type="pool")
 ```
 
-Plotting options mentioned in section D such as `"manhattan"`, `"qqplot"`, `"scores"`, `"screeplot"`, or `"stat.distribution"` are still valid for Pool-seq data:
+Plotting options mentioned in section D such as `"manhattan"`, `"qqplot"`, `"scores"`, `"screeplot"`, or `"stat.distribution"` are still valid for Pool-seq data.
 
-```{r,fig.width=7,fig.height=5,fig.align='center'}
-plot(xpool,option="manhattan")
+
+# G. Reading outputs from PCAdapt fast
+
+For large datasets (more than 100,000 SNPs), computing PCA with the R package can be slow. In this case, the [PCAdapt](http://membres-timc.imag.fr/Michael.Blum/PCAdapt.html) C software is faster than the `R` package. 
+
+### Installation
+
+The C software is currently available for UNIX OS or MAC OS and can be downloaded [here](http://membres-timc.imag.fr/Michael.Blum/PCAdapt/ArchivePCAdapt.tar.gz). To install the software, proceed as follows: 
+
+- open a terminal and go to the directory where the archive has been downloaded.
+- unzip the archive (a directory called 'PCAdaptPackage' should be created)
+- type the following command lines successively: 
+
+```
+cd PCAdaptPackage
+make lapack
+make
 ```
 
-# G. Advanced Usage
+The software can handle missing values. It assumes missing values are encoded using `9`.
 
-## G.1. Other test statistics
+## G.1 Running PCAdapt fast for genotype data
 
-The default option uses the Mahalanobis distance as a test statistic to seek for outlier SNPs, but other statistics can be computed based on the loadings. However except for power users, we recommend to use the Mahalanobis distance which provides the best rankings of SNPs in most cases we have investigated.
+The C software assumes that individuals are available in colums and genotypes in rows. If you have data files in .vcf or .ped format, you can convert the data file using the following command lines
+
+```
+./vcf2pcadapt inputfile.vcf outputgenotype
+./ped2pcadapt inputfile.ped outputgenotype
+```
+
+To run PCAdapt, use the following command line:
+
+```
+./PCAdapt fast -i outputgenotype -o myoutput -K number_of_PCs
+```
+
+where `outputgenotype` is the genotype matrix, `myoutput` is the name of the output file and `number_of_PCs` is the number of principal components that will be computed. Choose a value of `K` that is large enough (`K>20`) in order to be able to choose `K` with the scree plot.
+For more details about the software, check out the [manual](http://membres-timc.imag.fr/Michael.Blum/PCAdapt/Man.pdf).
+
+### Read outputs with the `R` package `pcadapt` 
+
+To read outputs in `R` from the software PCAdapt, set `data.type="PCAdapt"` in the `pcadapt` function. The argument `data` should be the name of the output provided by PCAdapt without any extension. Assuming the file returned by the PCAdapt software is called "myoutput" and is available at "path_to_directory", the command line should be :
+
+```
+x <- pcadapt(data="path_to_directory/myoutput",data.type="PCAdapt")
+```
+
+Use the plot function to display the scree plot and choose the optimal value for `K`
+
+```
+plot(x,option="screeplot")
+```
+
+When the optimal value of `K` is found, you can compute Mahalanobis distances and p-values using again the `pcadapt` function.
+
+```
+x <- pcadapt(data="path_to_directory/myoutput",K=K,data.type="PCAdapt")
+```
+
+## G.2 Running PCAdapt fast for Pool-seq data
+
+The C software supports data files that contain allele frequencies. It assumes that populations are in rows and SNPs in columns.
+To run PCAdapt for Pool-seq data, use the following command line
+
+```
+./PCAdapt fast -i outputgenotype -o myoutput -K number_of_PCs -S 0
+```
+
+where `number_of_PCs` should be equal to the number of populations minus one. For example, if there are 5 populations in the dataset, the command line should be
+
+```
+./PCAdapt fast -i outputgenotype -o myoutput -K 4 -S 0
+```
+
+where `-S 0` indicates that the data should not be scaled, which is important for Pool-seq data.
+
+
+### Read outputs with the `R` package `pcadapt` 
+
+To read outputs in `R` from the software PCAdapt, set `data.type="PCAdapt"` in the `pcadapt` function and follow the same routines as described in section G.1.
+
+# H. Advanced Usage
+
+The default option uses the Mahalanobis distance as a test statistic to seek for outlier SNPs, but other statistics can be computed based on the loadings. However except for power users, we recommend to use the Mahalanobis distance that provides the best rankings of SNPs in most cases we have investigated.
 
 ### Communality
 
-The communality statistic measures the proportion of variance explained by the first `K` PCs.  When there are `K+1` populations, the communality statistic provides a ranking similar to the widely-used Fst statistic. P-values are computed using a chi-square approximation (Duforet-Frebourg et al. 2015).
+The communality statistic measures the proportion of variance explained by the first `K` PCs.  When there are `K+1` populations, the communality statistic provides a ranking similar to the widely used Fst statistic. P-values are computed using a chi-square approximation (Duforet-Frebourg et al. 2015).
 The test based on the communality statistic can be performed by setting `method` to `communality` in the `pcadapt` function.
 
 ```{r} 
@@ -286,8 +386,7 @@ summary(x_cw$pvalues)
 
 `pcadapt` returns `K` vectors of p-values (one for each principal component), all of them being accessible, using the `$` symbol or the `[]` symbol. For example, typing `x_cw$pvalues$p2` or `x_cw$pvalues[,2]` in the `R` console returns the list of p-values associated with the second principal component (provided that `K` is larger than or equal to `2`).
 
-The p-values are computed based on the matrix of loadings. The loadings of the neutral markers
-are assumed to follow a centered Gaussian distribution. The standard deviation of the Gaussian distribution is estimated using the Median Absolute Deviation.
+The p-values are computed based on the matrix of loadings. The loadings of the neutral markers are assumed to follow a centered Gaussian distribution. The standard deviation of the Gaussian distribution is estimated using the Median Absolute Deviation.
 
 To display the neutral distribution for the component-wise case, the value of `K` has to be specified.
 
@@ -295,40 +394,15 @@ To display the neutral distribution for the component-wise case, the value of `K
 plot(x_cw,option="stat.distribution",K=2)
 ```
 
-## G.2 Reading outputs from PCAdapt fast
 
-For large datasets (more than 100,000 SNPs), computing PCA with the R package can be slow. In this case, the [PCAdapt](http://membres-timc.imag.fr/Michael.Blum/PCAdapt.html) C software is faster than the `R` package. 
+## Changelog `pcapdapt 2.0.1`
 
-### Installation
+- Vignette corrected: when reading output from the software PCAdapt, we do not mention the deprecated argument `PCAdapt` in the function `pcadapt`.
 
-The C software is currently available for UNIX OS or MAC OS and can be downloaded [here](http://membres-timc.imag.fr/Michael.Blum/PCAdapt/ArchivePCAdapt.tar.gz). To install the software, proceed as follows : 
+- Bug fix: an issue occurring when reading outputs from PCAdapt has been fixed.
 
-- open a terminal and go to the directory where the archive has been downloaded.
-- unzip the archive (a directory called 'PCAdaptPackage' should be created)
-- type the following command lines successively: 
+- We mention in the vignette how to use Pool-seq data with the C software PCAdapt fast.
 
-```
-cd PCAdaptPackage
-make lapack
-make
-```
-
-To run PCAdapt, use the following command line:
-
-```
-./PCAdapt fast -i genotype -o myoutput -K number_of_PCs
-```
-
-where `genotype` is the genotype matrix, `myoutput` is the name of the output file and `number_of_PCs` is the number of principal components that will be computed.
-For more details about the software, check out the [manual](http://membres-timc.imag.fr/Michael.Blum/PCAdapt/Man.pdf).
-
-### Read the outputs with the `R` package `pcadapt` 
-
-To read outputs in `R` from the software PCAdapt, switch the argument `PCAdapt` to `TRUE` in the `pcadapt` function. The argument `data` should be the name of the output provided by PCAdapt without any extention. Assuming the file returned by the PCAdapt sofwtare is called "myoutput" and is available at "path_to_directory", the command line should be :
-
-```
-x <- pcadapt(data="path_to_directory/myoutput",K=K,PCAdapt=TRUE)
-```
 
 ## Changelog `pcadapt 2.0`
 
@@ -340,6 +414,8 @@ x <- pcadapt(data="path_to_directory/myoutput",K=K,PCAdapt=TRUE)
 
 Duforet-Frebourg, N., Luu, K., Laval, G., Bazin, E., & Blum, M. G. (2015). [Detecting genomic signatures of natural selection with principal component analysis: application to the 1000 Genomes data. arXiv preprint arXiv:1504.04543](http://arxiv.org/abs/1504.04543).
  
+
+
 
 
 

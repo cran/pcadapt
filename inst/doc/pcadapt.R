@@ -54,9 +54,6 @@ pooldata <- read4pcadapt("pool3pops",option="example",transpose=FALSE)
 ## ------------------------------------------------------------------------
 xpool <- pcadapt(pooldata,data.type="pool")
 
-## ----fig.width=7,fig.height=5,fig.align='center'-------------------------
-plot(xpool,option="manhattan")
-
 ## ------------------------------------------------------------------------
 x_com <- pcadapt(data,K=2,method="communality")
 

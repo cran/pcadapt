@@ -211,11 +211,11 @@ screePlot = function(x,num_pc=NULL){
 #' @export
 manhattanPlot = function(x,K){ 
   if (attr(x,"method")=="componentwise"){
-    pval_K <- x$pvalues[x$maf>=attr(x,"minmaf"),K]
+    pval_K <- x$pvalues[!is.na(x$pvalues[,K]),K]
   } else {
-    pval_K <- x$pvalues[x$maf>=attr(x,"minmaf")]
+    pval_K <- x$pvalues[!is.na(x$pvalues)]
   }
-  p <- length(pval_K)  
+  p <- length(pval_K)
   plot.default(1:p,-log10(pval_K),xlab="SNP",ylab="-log10(p-values)",cex=0.3,pch=19)
   title("Manhattan plot")
 }
@@ -243,7 +243,7 @@ neutralDistribution = function(x,K,n_breaks=100){
   idxmaf <- x$maf>attr(x,"minmaf")
   if (attr(x,"method")=="componentwise"){
     z <- x$loadings[idxmaf,K]/x$gif[K]
-    sigma <- apply(x$loadings,2,mad)
+    sigma <- apply(x$loadings,2,FUN=function(xx){mad(xx,na.rm=TRUE)})
     h <- hist(z,breaks=n_breaks,freq=FALSE,xlab="Loadings",main=NULL)
     x1 <- seq(floor(min(z[which(!is.na(z))])),floor(max(z[which(!is.na(z))])+1),length=200)
     y <- dnorm(x1,mean=0,sd=sigma)

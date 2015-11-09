@@ -5,14 +5,14 @@
 	Principal Component Analysis for Outlier Detection.
 }
 \description{
-This package has been developped to provide statistical tools for outlier detection based on Principal Component Analysis.
+This package has been developed to provide statistical tools for outlier detection based on Principal Component Analysis.
 }
 \details{
 \tabular{ll}{
 Package: \tab pcadapt\cr
 Type: \tab Package\cr
-Version: \tab 2.0\cr
-Date: \tab 2015-10-26\cr
+Version: \tab 2.0.1\cr
+Date: \tab 2015-11-06\cr
 License: \tab (>= 2)\cr
 }
 For an overview of how to use the package, please check the html document provided as a vignette by typing the following command in the \code{R} console:

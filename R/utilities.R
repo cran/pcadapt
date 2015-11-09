@@ -70,6 +70,8 @@ read.genotype = function(file,option=NULL,header=FALSE,sep=" ",mapheader,mapsep=
 #' n rows and p columns where n is the number of populations and p is the number of genetic markers.
 #' @param mapheader a logical value indicating whether the map file contains the names of the variables as its first line.
 #' @param mapsep a character string that specifies the type of separator used when reading the data.
+#' @param na.strings a character vector of strings which are to be interpreted as NA values. Blank fields are also considered 
+#' to be missing values in logical, integer, numeric and complex fields.
 #' 
 #' @examples
 #' ## see also ?pcadapt for examples
@@ -77,11 +79,11 @@ read.genotype = function(file,option=NULL,header=FALSE,sep=" ",mapheader,mapsep=
 #' @importFrom utils read.table
 #' 
 #' @export
-read4pcadapt = function(x=NULL,option="genotype",header=FALSE,sep="",transpose=FALSE,mapheader=FALSE,mapsep="\t"){
+read4pcadapt = function(x=NULL,option="genotype",header=FALSE,sep="",transpose=FALSE,mapheader=FALSE,mapsep="\t",na.strings=c("-9","NA","NaN")){
   if (option == "example"){
     out <- read.table(system.file("extdata",x,package="pcadapt"),header=FALSE)
   } else if (option == "genotype" | option == "pool"){
-    out <- read.table(x,header=header,sep=sep,na.strings=c("-9","NA","NaN"))
+    out <- read.table(x,header=header,sep=sep,na.strings=na.strings)
     if (transpose==TRUE){
       out <- t(out)
     }

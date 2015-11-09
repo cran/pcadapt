@@ -5,7 +5,8 @@
 \title{pcadapt read function}
 \usage{
 read4pcadapt(x = NULL, option = "genotype", header = FALSE, sep = "",
-  transpose = FALSE, mapheader = FALSE, mapsep = "\\t")
+  transpose = FALSE, mapheader = FALSE, mapsep = "\\t",
+  na.strings = c("-9", "NA", "NaN"))
 }
 \arguments{
 \item{x}{can be a file path or a file name, depending on the chosen option.}
@@ -22,6 +23,9 @@ n rows and p columns where n is the number of populations and p is the number of
 \item{mapheader}{a logical value indicating whether the map file contains the names of the variables as its first line.}
 
 \item{mapsep}{a character string that specifies the type of separator used when reading the data.}
+
+\item{na.strings}{a character vector of strings which are to be interpreted as NA values. Blank fields are also considered
+to be missing values in logical, integer, numeric and complex fields.}
 }
 \description{
 \code{read4pcadapt} is a function which output may be read by the main function \code{pcadapt}. It currently supports two formats.

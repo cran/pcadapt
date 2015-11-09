@@ -8,14 +8,15 @@ pcadapt(data = NULL, K, method = "mahalanobis", data.type = "genotype",
   minmaf = 0.05, ploidy = 2)
 }
 \arguments{
-\item{data}{a data matrix or a data frame if `PCAdapt = FALSE`. The name of the file generated with the \code{C} software PCAdapt (with no extension) if \code{PCAdapt=TRUE}.}
+\item{data}{a data matrix or a data frame if `PCAdapt = FALSE`. The name of the file generated with the \code{C} software PCAdapt (with no extension) if \code{data.type="PCAdapt"}.}
 
-\item{K}{an integer specifying the number of principal components to retain. Not necessary if \code{PCAdapt=TRUE}.}
+\item{K}{an integer specifying the number of principal components to retain. In the case where \code{data.type="PCAdapt"}, it is not necessary to set a value for \code{K}, but specifying \code{K}
+will reduce the number of principal components taken into account.}
 
 \item{method}{a character string that specifies the test statistic to compute the p-values. Four statistics are currently available,
 \code{"mahalanobis"}, \code{"communality"}, \code{"euclidean"} and \code{"componentwise"}.}
 
-\item{data.type}{a character string that specifies the type of data being read, either a \code{genotype} matrix (default), either a \code{frequency} matrix.}
+\item{data.type}{a character string that specifies the type of data being read, either a \code{genotype} matrix (\code{data.type="genotype"}), or a matrix of allele frequencies (\code{data.type="pool"}, or outputs from the software PCAdapt (\code{data.type="PCAdapt"}).}
 
 \item{minmaf}{a value between \code{0} and \code{0.5} specifying the threshold of minor allele frequencies above which p-values are computed.}
 

@@ -26,11 +26,12 @@
 #' distribution with \code{K} degrees of freedom. When using \code{method="componentwise"}, the rescaled loadings should follow a standard normal distribution.
 #' For Pool-seq data, \code{pcadapt} provides p-values based on the Mahalanobis distance for each SNP.
 #'
-#' @param data a data matrix or a data frame if `PCAdapt = FALSE`. The name of the file generated with the \code{C} software PCAdapt (with no extension) if \code{PCAdapt=TRUE}.
-#' @param K an integer specifying the number of principal components to retain. Not necessary if \code{PCAdapt=TRUE}.
+#' @param data a data matrix or a data frame if `PCAdapt = FALSE`. The name of the file generated with the \code{C} software PCAdapt (with no extension) if \code{data.type="PCAdapt"}.
+#' @param K an integer specifying the number of principal components to retain. In the case where \code{data.type="PCAdapt"}, it is not necessary to set a value for \code{K}, but specifying \code{K}
+#' will reduce the number of principal components taken into account.
 #' @param method a character string that specifies the test statistic to compute the p-values. Four statistics are currently available,
 #' \code{"mahalanobis"}, \code{"communality"}, \code{"euclidean"} and \code{"componentwise"}.
-#' @param data.type a character string that specifies the type of data being read, either a \code{genotype} matrix (default), either a \code{frequency} matrix.
+#' @param data.type a character string that specifies the type of data being read, either a \code{genotype} matrix (\code{data.type="genotype"}), or a matrix of allele frequencies (\code{data.type="pool"}, or outputs from the software PCAdapt (\code{data.type="PCAdapt"}).
 #' @param minmaf a value between \code{0} and \code{0.5} specifying the threshold of minor allele frequencies above which p-values are computed.
 #' @param ploidy an integer specifying the ploidy of the individuals.
 #'
@@ -66,8 +67,6 @@
 #' plot(x,option="qqplot")
 #' 
 #'@importFrom utils read.table
-#'@importFrom robust covRob
-#'@importFrom MASS cov.rob
 #'
 #' @export
 pcadapt = function(data=NULL,K,method="mahalanobis",data.type="genotype",minmaf=0.05,ploidy=2){
@@ -91,10 +90,10 @@ pcadapt = function(data=NULL,K,method="mahalanobis",data.type="genotype",minmaf=
     }    
     res$loadings <- ldgs[,1:K]*sqrt(nSNP)
     res$scores <- t(read.table(paste0(data,".scores"),header=FALSE))[,1:K]
+    out <- read.table(data,header=TRUE)  
     res$maf <- out$mAF 
     res$loadings[res$maf<minmaf,] <- NA
-    res$singular_values <- res$singular_values[,1:K]
-    out <- read.table(data,header=TRUE)    
+    res$singular_values <- res$singular_values[,1:K]  
   } else if (data.type == "pool"){
     nPOP <- dim(data)[1]
     nSNP <- dim(data)[2]
@@ -105,7 +104,8 @@ pcadapt = function(data=NULL,K,method="mahalanobis",data.type="genotype",minmaf=
       res <- corpca(data,K,scale=FALSE)
     }
     freq <- apply(data,2,sum)/nPOP
-    res$maf <- pmin(freq,1-freq)
+    res$maf <- as.vector(pmin(freq,1-freq))
+    res$maf[which(is.na(res$maf))] <- 0
   }
   aux <- computeStats(res,method,nSNP,K)
   res$pvalues <- pval(aux,method,K)  
@@ -178,7 +178,7 @@ corpca = function(data,K,scale=TRUE){
 #' 
 #' @keywords internal
 #' 
-#' @importFrom stats pnorm median pchisq qchisq mad
+#' @importFrom stats pnorm pchisq qchisq mad
 #' 
 #' @export
 pval = function(x,method,K){  
@@ -186,15 +186,13 @@ pval = function(x,method,K){
     pvalues <- NULL
     column_names <- NULL
     for (k in 1:K){
-      sigma <- apply(x$loadings,2,mad)
+      sigma <- apply(x$loadings,FUN=function(xx){mad(xx,na.rm=TRUE)},MARGIN=2)
       pvalues <- cbind(pvalues,2*pnorm(abs(x$loadings[,k]/x$gif[k]),mean=0,sd=sigma[k],lower.tail=FALSE))      
       column_names <- c(column_names,paste0("p",k))      
     }
     q <- as.data.frame(pvalues)
     colnames(q) <- column_names
   } else {
-    #q <- array(0,dim=c(length(x$chi2_stat),1))
-    #q[,] <- pchisq(x$chi2_stat,df=K,lower.tail=FALSE)
     q <- pchisq(x$chi2_stat,df=K,lower.tail=FALSE)
   }  
   return(q)
@@ -222,28 +220,37 @@ pval = function(x,method,K){
 computeStats = function(res,method,nSNP,K){
   aux <- NULL
   aux$loadings <- res$loadings
+  nanlist <- which(is.na(apply(abs(aux$loadings),1,sum)))
   if (method == "mahalanobis"){
     if (K>1){
       aux$stat <- as.vector(robust::covRob(res$loadings,na.action=na.omit,estim="pairwiseGK")$dist)
-      aux$stat[which(is.nan(aux$stat))] <- 0 
+      if (length(nanlist)>0){
+        for (d in 1:length(nanlist)){
+          if (nanlist[d]>1){
+            aux$stat <- c(aux$stat[1:(nanlist[d]-1)],NA,aux$stat[-(1:(nanlist[d]-1))])
+          } else if (nanlist[d]==1){
+            aux$stat <- c(NA,aux$stat)  
+          } else if (nanlist[d]==nSNP){
+            aux$stat <- c(aux$stat,NA) 
+          }
+        }
+      }
       aux$gif <- median(aux$stat,na.rm=TRUE)/qchisq(0.5,df=K)
       aux$chi2_stat <- aux$stat/aux$gif
     } else if (K==1){
-      onedcov <- as.vector(MASS::cov.rob(res$loadings))
+      nanlist <- which(!is.na(res$loadings[,1]))
+      onedcov <- as.vector(MASS::cov.rob(res$loadings[nanlist,1]))
       aux$stat <- (res$loadings[,1]-onedcov$center)^2/onedcov$cov[1]
-      aux$stat[which(is.nan(aux$stat))] <- 0 
       aux$gif <- median(aux$stat,na.rm=TRUE)/qchisq(0.5,df=K)
       aux$chi2_stat <- aux$stat/aux$gif
     }
   } else if (method == "euclidean"){
-    loadmad <- apply(res$loadings,2,mad)
+    loadmad <- apply(aux$loadings,FUN=function(xx){mad(xx,na.rm=TRUE)},MARGIN=2)
     aux$stat <- sapply(1:nSNP,FUN=function(xx){sum(res$loadings[xx,1:K]^2/(loadmad^2))})  
-    aux$stat[which(is.nan(aux$stat))] <- 0
     aux$gif <- median(aux$stat,na.rm=TRUE)/qchisq(0.5,df=K)
     aux$chi2_stat <- aux$stat/aux$gif
   } else if (method == "communality"){
     aux$stat <- sapply(1:nSNP,FUN=function(xx){sum(res$loadings[xx,1:K]^2*res$singular_values[1:K]^2/(nSNP))})
-    aux$stat[which(is.nan(aux$stat))] <- 0
     c <- sum(res$singular_values[1:K]^2)/K
     aux$gif <- median(aux$stat*nSNP/c,na.rm=TRUE)/qchisq(0.5,df=K)      
     aux$chi2_stat <- aux$stat*nSNP/(c*aux$gif)

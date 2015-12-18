@@ -44,7 +44,7 @@ library(pcadapt)
 library(pcadapt)
 ```
 
-Sections A-E explain how to use the package for genotype data. Section F additionally explains how to use the package for Pool-seq data, but previous sections should also be read. Section G explains advanced usage of the package.
+Sections A-E explain how to use the package for genotype data. Section F additionally explains how to use the package for Pool-seq data, but previous sections should also be read. Section G explains how to use the `R` package with the C software PCAdapt fast which is well-suited for datasets with a large number of SNPs ($\geq 100,000$). Section H explains advanced usage of the package.
 
 # A. Reading the genotype data
 
@@ -95,6 +95,13 @@ To choose `K`, principal component analysis should first be performed with a lar
 x <- pcadapt(data,K=20)
 ```
 
+**NB** : by default, data are assumed to be diploid. To specify the ploidy, use the argument `ploidy` (`ploidy=2` by default) in the `pcadapt` function. For example for haploid data:
+
+```
+x <- pcadapt(data,K=20,ploidy=1)
+```
+
+
 ## B.1. Scree plot
 
 The 'scree plot' displays the percentage of variance that is explained by each PC. The ideal pattern in a scree plot is a steep curve followed by a bend and an almost horizontal line. The recommended value of `K` corresponds to the largest value of `K` before the plateau is reached. In the provided example, `K=2` is the optimal choice of `K`. The plot function displays a scree plot:
@@ -113,7 +120,7 @@ plot(x,option="screeplot",num_pc=4)
 
 Another option to choose the number of PCs is based on the 'score plot' that displays population structure. The score plot displays the projections of the individuals onto the specified principal components. Using the score plot, the choice of  `K` can be limited to the values of `K` that correspond to a relevant level of population structure.
 
-When population labels are known, individuals of the same populations can be displayed with the same color using the `pop` argument, which should contain the list of indices of the populations of origin. In the **geno3pops** example, the first population is composed of the first 50 individuals, the second population of the next 50 individuals, and so on. Thus, a population file that can be provided to the argument `pop` should look like this:
+When population labels are known, individuals of the same populations can be displayed with the same color using the `pop` argument, which should contain the list of indices of the populations of origin. In the **geno3pops** example, the first population is composed of the first 50 individuals, the second population of the next 50 individuals, and so on. Thus, a vector of indices or characters (population names) that can be provided to the argument `pop` should look like this:
 
 ```{r}
 poplist <- c(rep(1,50),rep(2,50),rep(3,50))
@@ -148,7 +155,7 @@ For the **geno3pops** data, it was found in section B that `K=2` corresponds to 
 x <- pcadapt(data,K=2)
 ```
 
-In addition to the number `K` of principal components to work with, the user can also set the parameter `minmaf` that corresponds to a threshold of minor allele frequency. By default, the parameter `minmaf` is set to `5%`. P-values of SNPs with a minor allele frequency smaller than the threshold are not computed (`NA` is returned).
+In addition to the number `K` of principal components to work with, the user can also set the parameter `min.maf` that corresponds to a threshold of minor allele frequency. By default, the parameter `min.maf` is set to `5%`. P-values of SNPs with a minor allele frequency smaller than the threshold are not computed (`NA` is returned).
 
 The object `x` returned by the function `pcadapt` contains numerical quantities obtained after performing a PCA on the genotype matrix.
 
@@ -266,7 +273,8 @@ Plotting options mentioned in section D such as `"manhattan"`, `"qqplot"`, `"sco
 
 # G. Reading outputs from PCAdapt fast
 
-For large datasets (more than 100,000 SNPs), computing PCA with the R package can be slow. In this case, the [PCAdapt](http://membres-timc.imag.fr/Michael.Blum/PCAdapt.html) C software is faster than the `R` package. 
+For large datasets (more than 100,000 SNPs), computing PCA with the R package can be slow. In this case, the [PCAdapt](http://membres-timc.imag.fr/Michael.Blum/PCAdapt.html) C software is faster than the `R` package. PCA should be performed with the C software and
+outputs of PCA should be processed with the `R` package.
 
 ### Installation
 
@@ -293,18 +301,25 @@ The C software assumes that individuals are available in colums and genotypes in
 ./ped2pcadapt inputfile.ped outputgenotype
 ```
 
-To run PCAdapt, use the following command line:
+To run PCAdapt for diploid data, use the following command line:
 
 ```
-./PCAdapt fast -i outputgenotype -o myoutput -K number_of_PCs
+./PCAdapt fast -i outputgenotype -o myoutput -K number_of_PCs -h 0 -m 0.05
 ```
 
-where `outputgenotype` is the genotype matrix, `myoutput` is the name of the output file and `number_of_PCs` is the number of principal components that will be computed. Choose a value of `K` that is large enough (`K>20`) in order to be able to choose `K` with the scree plot.
+where `outputgenotype` is the genotype matrix, `myoutput` is the name of the output file, `number_of_PCs` is the number of principal components that will be computed, `0.05` is the threshold for minor allele frequencies below which SNPs are discarded. Choose a value of `K` that is large enough (`K>20`) in order to be able to choose `K` with the scree plot.
+
+To run PCAdapt for haploid data, use the following command line:
+
+```
+./PCAdapt fast -i outputgenotype -o myoutput -K number_of_PCs -h 1 -m 0.05
+```
+
 For more details about the software, check out the [manual](http://membres-timc.imag.fr/Michael.Blum/PCAdapt/Man.pdf).
 
 ### Read outputs with the `R` package `pcadapt` 
 
-To read outputs in `R` from the software PCAdapt, set `data.type="PCAdapt"` in the `pcadapt` function. The argument `data` should be the name of the output provided by PCAdapt without any extension. Assuming the file returned by the PCAdapt software is called "myoutput" and is available at "path_to_directory", the command line should be :
+To read outputs in `R` from the software PCAdapt, set `data.type="PCAdapt"` in the `pcadapt` function. The argument `data` should be the name of the output provided by PCAdapt without any extension. Assuming the file returned by the PCAdapt software is called "myoutput" and is available at "path_to_directory", the command line should be (`ploidy=2` and `min.maf=0.05` by default in the `pcadapt` function) :
 
 ```
 x <- pcadapt(data="path_to_directory/myoutput",data.type="PCAdapt")
@@ -316,7 +331,7 @@ Use the plot function to display the scree plot and choose the optimal value for
 plot(x,option="screeplot")
 ```
 
-When the optimal value of `K` is found, you can compute Mahalanobis distances and p-values using again the `pcadapt` function.
+When the optimal value of `K` is found, you can compute Mahalanobis distances and p-values using again the `pcadapt` function (`ploidy=2` and `min.maf=0.05` by default).
 
 ```
 x <- pcadapt(data="path_to_directory/myoutput",K=K,data.type="PCAdapt")
@@ -394,6 +409,15 @@ To display the neutral distribution for the component-wise case, the value of `K
 plot(x_cw,option="stat.distribution",K=2)
 ```
 
+## Changelog `pcadapt 2.1` (12-18-2015)
+
+- The scaling of the SNP before computing PCA has been changed. Instead of using standard deviation, we now use the square root of $p(1-p)$ (haploid data) or of $2p(1-p)$ (diploid data) where $p$ is the minimum allele frequency.
+
+- Bug fix: the genomic inflation factor has been corrected when `K=1`.
+
+- Bug fix: a problem due to high proportion of missing data slowing the program has been fixed.
+
+- Argument `"minmaf"` has been replaced with `"min.maf"`.
 
 ## Changelog `pcapdapt 2.0.1`
 

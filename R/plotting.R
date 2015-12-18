@@ -38,7 +38,7 @@
 #' @export
 plot.pcadapt = function(x,...,option=NULL,K=NULL,i=1,j=2,pop=attr(x,"pop"),subcol=NULL,threshold=NULL,num_pc=NULL){
   if (!(option %in% c("screeplot","scores","manhattan","qqplot","stat.distribution"))){
-    warning(paste("Plotting option",option,"not valid, options currently available are: screeplot, scores, manhattan, qqplot, loadings."))
+    warning(paste("Plotting option",option,"not valid, options currently available are: screeplot, scores, manhattan, qqplot, stat.distribution."))
   } else {
     if (option == "screeplot"){
       screePlot(x,num_pc = num_pc)   
@@ -99,9 +99,9 @@ plot.pcadapt = function(x,...,option=NULL,K=NULL,i=1,j=2,pop=attr(x,"pop"),subco
 #' @export
 pvalqqPlot = function(x,K,threshold = NULL){
   if (attr(x,"method")=="componentwise"){
-    sorted_pval <- sort(x$pvalues[x$maf>=attr(x,"minmaf"),K])
+    sorted_pval <- sort(x$pvalues[x$maf>=attr(x,"min.maf"),K])
   } else {
-    sorted_pval <- sort(x$pvalues[x$maf>=attr(x,"minmaf")])
+    sorted_pval <- sort(x$pvalues[x$maf>=attr(x,"min.maf")])
   }
   p <- length(sorted_pval) 
   expected_p <- 1:p/p
@@ -215,8 +215,7 @@ manhattanPlot = function(x,K){
   } else {
     pval_K <- x$pvalues[!is.na(x$pvalues)]
   }
-  p <- length(pval_K)
-  plot.default(1:p,-log10(pval_K),xlab="SNP",ylab="-log10(p-values)",cex=0.3,pch=19)
+  plot.default(1:length(pval_K),-log10(pval_K),xlab="SNP",ylab="-log10(p-values)",cex=0.3,pch=19)
   title("Manhattan plot")
 }
 
@@ -240,7 +239,7 @@ manhattanPlot = function(x,K){
 #'
 #' @export
 neutralDistribution = function(x,K,n_breaks=100){
-  idxmaf <- x$maf>attr(x,"minmaf")
+  idxmaf <- x$maf>attr(x,"min.maf")
   if (attr(x,"method")=="componentwise"){
     z <- x$loadings[idxmaf,K]/x$gif[K]
     sigma <- apply(x$loadings,2,FUN=function(xx){mad(xx,na.rm=TRUE)})

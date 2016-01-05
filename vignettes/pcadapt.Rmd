@@ -1,33 +1,13 @@
 ---
-title: "pcadapt"
-author: "Keurcien Luu, Michael G.B. Blum"
-date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{pcadapt}
   %\VignetteEngine{knitr::rmarkdown}
   %\usepackage[utf8]{inputenc}
 ---
-
----
-title: "pcadapt"
-output: html_vignette
----
----
-title: "pcadapt"
-author: "Keurcien Luu, Michael G.B. Blum"
-date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{pcadapt}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\usepackage[utf8]{inputenc}
----
-
----
-title: "pcadapt"
-output: html_vignette
----
+<center> <h1> pcadapt </h1> </center>
+<center> <h3> Keurcien Luu, Michael G.B. Blum </h3> </center>
+<center> <h3> `r Sys.Date()` </h3> </center>
 
 **pcadapt** has been developed to detect genetic markers involved in biological adaptation. **pcadapt** provides statistical tools for outlier detection based on Principal Component Analysis (PCA).
 
@@ -408,6 +388,10 @@ To display the neutral distribution for the component-wise case, the value of `K
 ```{r,fig.width=7,fig.height=5,fig.align='center'}
 plot(x_cw,option="stat.distribution",K=2)
 ```
+
+## Changelog `pcadapt 2.1.1` (01-05-2016)
+
+- Bug fix: vignette header added.
 
 ## Changelog `pcadapt 2.1` (12-18-2015)
 

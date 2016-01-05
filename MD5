@@ -1,4 +1,4 @@
-4cb9f9e9c1a423211be2b6e010c4ca90 *DESCRIPTION
+d778dea39db873d465f9c0018471f226 *DESCRIPTION
 f85251870507e13ea3a67e5160399b94 *NAMESPACE
 87fbdde989e610f6ec3e67ef095c2acb *R/fst.R
 ee6a7553887020d54c9fc581118f3c9b *R/pcadapt.R
@@ -6,8 +6,8 @@ ee6a7553887020d54c9fc581118f3c9b *R/pcadapt.R
 99962304aaede251808ad8bbbf3e17ab *R/utilities.R
 674abef545cad80347c793fc47b91351 *build/vignette.rds
 241616b4bc03ac6673b86ddf2fe80d39 *inst/doc/pcadapt.R
-f691727a43fbd9804119b504abb4f006 *inst/doc/pcadapt.Rmd
-656326a5a5111384ef9da8d0a9595f12 *inst/doc/pcadapt.html
+77d0cdc941f0cfdb918d857722778ee4 *inst/doc/pcadapt.Rmd
+a7de135454a56afddbd7b6663341941a *inst/doc/pcadapt.html
 cf5299bb5db7fc4b7523c3b3b4676e98 *inst/extdata/geno3pops
 16f0798923a4bd93037337e4174623a5 *inst/extdata/pool3pops
 dfb1f6afd51a874355fddb9ecaab634c *man/computeStats.Rd
@@ -17,7 +17,7 @@ fe96d6d97bf84f1d50e378636761b3d6 *man/fstCalc.Rd
 190f23b2de39b3581c9408623057d2b1 *man/getPopColors.Rd
 2b476bdd58aefed948e4229496828bf9 *man/manhattanPlot.Rd
 a4ad1e9627b0ccebb5a22d0291f2686b *man/neutralDistribution.Rd
-dd9865a867de09b7fcff0483ebd885ba *man/pcadapt-package.Rd
+be2c17a6427efc7b2ad6bfb8c33ae2b4 *man/pcadapt-package.Rd
 83d975c43e47a67600fec5f09db6dd6e *man/pcadapt.Rd
 5dc40e9e6bb8cded95448642b3679bb2 *man/plot.pcadapt.Rd
 fddb627860e2376e90a51d0068435c3b *man/pval.Rd
@@ -26,4 +26,4 @@ fddb627860e2376e90a51d0068435c3b *man/pval.Rd
 7061d18899596c8a150f83128a472b31 *man/read4pcadapt.Rd
 1aedb7ec38cb35deb12282304bf80ee0 *man/scoresPlot.Rd
 9355101a1735561f5487a91bc1714805 *man/screePlot.Rd
-f691727a43fbd9804119b504abb4f006 *vignettes/pcadapt.Rmd
+77d0cdc941f0cfdb918d857722778ee4 *vignettes/pcadapt.Rmd

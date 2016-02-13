@@ -161,6 +161,9 @@ We assume in the following that there are `n` individuals and `L` markers.
 
 - `singular_values` is a vector containing the `K` ordered squared root of the proportion of variance explained by each PC.
 
+- `zscores` is a `(L,K)` matrix containing the normalized linear regression coefficients.
+
+
 All of these elements are accessible using the `$` symbol. For example, the p-values are contained in `x$pvalues`.
 
 # D. Graphical tools 
@@ -281,6 +284,7 @@ The C software assumes that individuals are available in colums and genotypes in
 ./ped2pcadapt inputfile.ped outputgenotype
 ```
 
+**NB**: it is important to add the extension ".pcadapt" to the output file name.
 To run PCAdapt for diploid data, use the following command line:
 
 ```
@@ -292,18 +296,20 @@ where `outputgenotype` is the genotype matrix, `myoutput` is the name of the out
 To run PCAdapt for haploid data, use the following command line:
 
 ```
-./PCAdapt fast -i outputgenotype -o myoutput -K number_of_PCs -h 1 -m 0.05
+./PCAdapt fast -i `outputgenotype` -o myoutput -K number_of_PCs -h 1 -m 0.05
 ```
 
 For more details about the software, check out the [manual](http://membres-timc.imag.fr/Michael.Blum/PCAdapt/Man.pdf).
 
 ### Read outputs with the `R` package `pcadapt` 
 
-To read outputs in `R` from the software PCAdapt, set `data.type="PCAdapt"` in the `pcadapt` function. The argument `data` should be the name of the output provided by PCAdapt without any extension. Assuming the file returned by the PCAdapt software is called "myoutput" and is available at "path_to_directory", the command line should be (`ploidy=2` and `min.maf=0.05` by default in the `pcadapt` function) :
+To read outputs in `R` from the software PCAdapt, set `data.type="PCAdapt"` in the `pcadapt` function. The argument `data` should be the name of the output provided by PCAdapt without any extension. Assuming the file returned by the PCAdapt software is called "myoutput" and is available at "path_to_directory", the command line should be (`ploidy=2` and `min.maf=0.05` by default in the `pcadapt` function):
 
 ```
 x <- pcadapt(data="path_to_directory/myoutput",data.type="PCAdapt")
 ```
+
+**NB**: please make sure the files "myoutput", "outputgenotype", "myoutput.scores", "myoutput.loadings" and "myoutput.sigma" are all contained in the same folder.
 
 Use the plot function to display the scree plot and choose the optimal value for `K`
 
@@ -388,6 +394,11 @@ To display the neutral distribution for the component-wise case, the value of `K
 ```{r,fig.width=7,fig.height=5,fig.align='center'}
 plot(x_cw,option="stat.distribution",K=2)
 ```
+
+## Changelog `pcadapt 2.2` (02-12-2016)
+
+- The Mahalanobis distance is now estimated from the z-scores rather than the loadings.
+- Make sure you have downloaded the latest version of the C software PCAdapt (last updated on February, 11th, 2016).
 
 ## Changelog `pcadapt 2.1.1` (01-05-2016)
 

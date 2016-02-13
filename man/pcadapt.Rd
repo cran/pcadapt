@@ -29,11 +29,12 @@ The returned value contains the following components, depending on the choice of
 \item{stat}{is a vector containing the test statistics associated with the chosen method for each genetic marker. \code{NULL} if \code{method="componentwise"}. \code{method} default value set to \code{mahalanobis}.}
 \item{pvalues}{is a data frame containing p-values.}
 \item{maf}{is a vector containing minor allele frequencies.}
-\item{chi2_stat}{is a vector containing the scaled statistics equal to the values contained in \code{stats} divided by \code{gif} (\code{method}="mahalanobis","euclidean"). It should follow a chi-squared distribution with K degrees of freedom.}
+\item{chi2.stat}{is a vector containing the scaled statistics equal to the values contained in \code{stats} divided by \code{gif} (\code{method}="mahalanobis","euclidean"). It should follow a chi-squared distribution with K degrees of freedom.}
 \item{gif}{is a numerical value corresponding to the genomic inflation factor estimated from \code{stat}}
 \item{scores}{is a matrix corresponding to the projections of the individuals onto each PC.}
 \item{loadings}{is a matrix containing the correlations between each genetic marker and each PC.}
 \item{singular_values}{contains the ordered squared root of the proportion of variance explained by each PC.}
+\item{zscores}{contains the normalized linear regression coefficients.}
 }
 \description{
 \code{pcadapt} performs principal component analysis and computes p-values to test for outliers. The test for
@@ -59,7 +60,7 @@ Scaled loadings correspond to loadings divided by a robust estimate of their sta
 \code{componentwise}: returns a matrix of scaled loadings. Scaled loadings correspond to loadings divided by a robust estimate of their standard deviation.
 
 To compute p-values, test statistics (\code{stat}) are divided by a genomic inflation factor (\code{gif}) when \code{method="mahalanobis","euclidean"}. When \code{method="communality"}, the test
-statistic is first multiplied by \code{K} and divided by the percentage of variance explained by the first \code{K} PCs before accounting for genomic inflation factor. When using \code{method="mahalanobis","communality","euclidean"}, the scaled statistics (\code{chi2_stat}) should follow a chi-squared 
+statistic is first multiplied by \code{K} and divided by the percentage of variance explained by the first \code{K} PCs before accounting for genomic inflation factor. When using \code{method="mahalanobis","communality","euclidean"}, the scaled statistics (\code{chi2.stat}) should follow a chi-squared 
 distribution with \code{K} degrees of freedom. When using \code{method="componentwise"}, the rescaled loadings should follow a standard normal distribution.
 For Pool-seq data, \code{pcadapt} provides p-values based on the Mahalanobis distance for each SNP.
 }

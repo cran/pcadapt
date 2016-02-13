@@ -4,9 +4,11 @@
 \alias{computeStats}
 \title{Test Statistics}
 \usage{
-computeStats(res, method, nSNP, K)
+computeStats(data, res, method, nSNP, K, data.type, min.maf)
 }
 \arguments{
+\item{data}{a data matrix or a data frame if `PCAdapt = FALSE`.}
+
 \item{res}{a list of quantities among which are the loadings.}
 
 \item{method}{a character string that specifies the method used to compute the p-values.}
@@ -14,6 +16,11 @@ computeStats(res, method, nSNP, K)
 \item{nSNP}{an integer specifying the number of genetic markers.}
 
 \item{K}{an integer specifying the number of principal components to retain.}
+
+\item{data.type}{a character string that specifies the type of data being read, either a \code{genotype} matrix (\code{data.type="genotype"}), 
+or a matrix of allele frequencies (\code{data.type="pool"}, or outputs from the software PCAdapt (\code{data.type="PCAdapt"}).}
+
+\item{min.maf}{a value between \code{0} and \code{0.5} specifying the threshold of minor allele frequencies above which p-values are computed.}
 }
 \description{
 \code{computeStats} computes the test statistics for each genetic marker.

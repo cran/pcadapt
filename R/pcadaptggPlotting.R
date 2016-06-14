@@ -46,7 +46,7 @@ plot.pcadapt = function(x,...,option="manhattan",K=NULL,i=1,j=2,pop,threshold=NU
         score.plotting(x,i,j,pop=1:dim(x$scores)[1])
       }
     } else if (option == "stat.distribution"){
-      if ((attr(x,"method") %in% c("mahalanobis","euclidean","communality")) == FALSE){
+      if ((attr(x,"method") %in% c("mahalanobis","communality")) == FALSE){
         if (is.null(K)){
           warning("K has to be specified.")
         } else {
@@ -56,7 +56,7 @@ plot.pcadapt = function(x,...,option="manhattan",K=NULL,i=1,j=2,pop,threshold=NU
         neutral.plotting(x,1)
       }
     } else if (option == "manhattan"){
-      if ((attr(x,"method") %in% c("mahalanobis","euclidean","communality")) == FALSE){
+      if ((attr(x,"method") %in% c("mahalanobis","communality")) == FALSE){
         if (is.null(K)){
           warning("K has to be specified.")
         } else {
@@ -66,7 +66,7 @@ plot.pcadapt = function(x,...,option="manhattan",K=NULL,i=1,j=2,pop,threshold=NU
         manhattan.plotting(x,K=1)
       }
     } else if (option == "qqplot"){
-      if ((attr(x,"method") %in% c("mahalanobis","euclidean","communality")) == FALSE){
+      if ((attr(x,"method") %in% c("mahalanobis","communality")) == FALSE){
         if (is.null(K)){
           warning("K has to be specified")
         } else{
@@ -95,39 +95,42 @@ plot.pcadapt = function(x,...,option="manhattan",K=NULL,i=1,j=2,pop,threshold=NU
 #'
 #' @keywords internal
 #'
-#' @importFrom ggplot2 ggplot ggtitle labs geom_point guides aes_string
+#' @importFrom ggplot2 ggplot ggtitle labs geom_point guides aes aes_string geom_point scale_color_hue
 #'
 #' @export
 #'
 score.plotting = function(x,i=1,j=2,pop){
-
+  
   if (attr(x,"K")==1){
     warning("K=1, option not available since two principal components have to be computed at least.")
   } else {
-
+    
     if (i == j){
       stop("j has to be different from i.")
     }
-
+    
     if (i>attr(x,"K")){
       stop(paste0("i can't exceed ",attr(x,"K"),"."))
     }
-
+    
     if (j>attr(x,"K")){
       stop(paste0("j can't exceed ",attr(x,"K"),"."))
     }
-
-    ggdf <- as.data.frame(cbind(x$scores[,i],x$scores[,j]))
-    colnames(ggdf) <- c("PC_i","PC_j")
-    res.plot <- ggplot2::ggplot(ggdf,aes_string("PC_i","PC_j"))
-    res.plot <- res.plot + ggplot2::ggtitle(paste0("Projection onto PC",i," and PC",j))
-    res.plot <- res.plot + ggplot2::labs(x=paste0("PC",i),y=paste0("PC",j))
-    if (!missing(pop)){
-      pop.col <- get.score.color(pop)
-      res.plot <- res.plot + ggplot2::geom_point(aes(colour=pop.col)) + ggplot2::guides(colour=FALSE)
+    if (missing(pop)){
+      ggdf <- as.data.frame(cbind(x$scores[,i],x$scores[,j]))  
+      colnames(ggdf) <- c("PC_i","PC_j")
+      res.plot <- ggplot2::ggplot(ggdf,aes_string("PC_i","PC_j")) +
+        geom_point() 
     } else {
-      res.plot <- res.plot + ggplot2::geom_point()
+      ggdf <- as.data.frame(cbind(x$scores[,i],x$scores[,j],pop)) 
+      colnames(ggdf) <- c("PC_i","PC_j","Pop")
+      popnames <- get.pop.names(pop)
+      res.plot <- ggplot2::ggplot(ggdf,aes_string("PC_i","PC_j")) +
+        ggplot2::geom_point(ggplot2::aes(colour=factor(ggdf$Pop)))  +
+        ggplot2::scale_color_hue(name=" ",labels=popnames)
     }
+    res.plot <- res.plot + ggplot2::ggtitle(paste0("Projection onto PC",i," and PC",j)) +
+      ggplot2::labs(x=paste0("PC",i),y=paste0("PC",j))
     print(res.plot)
   }
 }
@@ -156,8 +159,9 @@ manhattan.plotting = function(x,K){
   } else {
     pval.K <- x$pvalues[!is.na(x$pvalues)]
   }
-  p0 <- ggplot2::qplot(1:length(pval.K),-log10(pval.K),col="red",xlab=paste0("SNP (with mAF>",attr(x,"min.maf"),")"),ylab="-log10(p-values)")
-  p0 <- p0 + ggplot2::guides(colour=FALSE) + ggplot2::ggtitle("Manhattan Plot")
+  p0 <- ggplot2::qplot(1:length(pval.K),-log10(pval.K),col="red",xlab=paste0("SNP (with mAF>",attr(x,"min.maf"),")"),ylab="-log10(p-values)") +
+    ggplot2::guides(colour=FALSE) + 
+    ggplot2::ggtitle("Manhattan Plot")
   print(p0)
 }
 
@@ -183,9 +187,9 @@ scree.plotting = function(x,K){
   else {m <- K}
   if (m<2){warning("K = 1, the scree plot is thus composed of a unique point.")}
   nSNP <- length(x$maf)
-  p0 <- ggplot2::qplot(x=1:m,y=(x$singular.values[1:m])^2/nSNP,col="red",xlab="PC",ylab="Proportion of explained variance")
-  p0 <- p0 + ggplot2::geom_line() + ggplot2::guides(colour=FALSE)
-  p0 <- p0 + ggplot2::ggtitle(paste("Scree Plot - K =",m))
+  p0 <- ggplot2::qplot(x=1:m,y=(x$singular.values[1:m])^2/nSNP,col="red",xlab="PC",ylab="Proportion of explained variance") + 
+    ggplot2::geom_line() + ggplot2::guides(colour=FALSE) +
+    ggplot2::ggtitle(paste("Scree Plot - K =",m))
   print(p0)
 }
 
@@ -214,8 +218,8 @@ pvalqq.plotting = function(x,K,threshold){
   }
   p <- length(sorted.pval)
   expected.p <- 1:p/p
-  p0 <- ggplot2::qplot(-log10(expected.p),-log10(sorted.pval),col="red",xlab="Expected -log10(p-values)",ylab="Observed -log10(p-values)")
-  p0 <- p0 + ggplot2::geom_abline()
+  p0 <- ggplot2::qplot(-log10(expected.p),-log10(sorted.pval),col="red",xlab="Expected -log10(p-values)",ylab="Observed -log10(p-values)") + 
+    ggplot2::geom_abline()
   if (!missing(threshold)){
     q <- floor(threshold*p)
     pval.thresh <- expected.p[q]
@@ -250,7 +254,6 @@ neutral.plotting = function(x,K){
     df <- attr(x,"K")
     z <- x$chi2.stat[idxmaf]
   }
-  p0 <- ggplot()
   min.z <- floor(min(z[which(!is.na(z))]))
   max.z <- floor(max(z[which(!is.na(z))])+1)
   if (max.z > 1e5){
@@ -259,9 +262,10 @@ neutral.plotting = function(x,K){
   xx <- seq(min.z,max.z,length=length(z))
   ggdf <- as.data.frame(cbind(xx,dchisq(xx,df=df),z))
   colnames(ggdf) <- c("abs","ord","chi2")
-  p0 <- p0 + geom_histogram(data=ggdf,aes_string(x="chi2",y="..density.."),binwidth=0.5,fill="#B0E2FF",alpha=0.6,colour="black")
-  p0 <- p0 + geom_line(data=ggdf,aes_string(x="abs",y="ord"),col="#4F94CD",size=1)
-  p0 <- p0 + ggplot2::ggtitle("Statistics distribution")
+  p0 <- ggplot() + 
+    geom_histogram(data=ggdf,aes_string(x="chi2",y="..density.."),binwidth=0.5,fill="#B0E2FF",alpha=0.6,colour="black") + 
+    geom_line(data=ggdf,aes_string(x="abs",y="ord"),col="#4F94CD",size=1) + 
+    ggplot2::ggtitle("Statistics distribution")
   print(p0)
 }
 

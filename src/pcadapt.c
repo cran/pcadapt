@@ -29,7 +29,6 @@
 #include "src_tools/linAlgebra.h"
 #include "src_tools/matrix.h"
 #include "pcadapt.h"
-
 #define MAXFILE 64
 
 void wrapper_pcadapt(char **inputfilename,int *npc, double *minmaf, int *ploidy, char **outputfilename){
@@ -50,13 +49,10 @@ void FastPCAdapt(char *filename, int K, double min_AF, int haploid, char *OUTFIL
 
     FILE *GenoFile;
 	char *OutputFileName = malloc(sizeof(char)*256);
-	int nSNP, nIND, nF;
-	int sc = 1, i;
+	int nSNP, nIND, nF = K;
+	int sc = 1, i, snp;
 	double *U, *V, *Sigma, *SNPSd, *Cov, *mAF, *miss;
-	/* Handling input parameters */
-	int snp;
-	nF = K;
-	//Rprintf("Reading file %s...\n",filename);
+	Rprintf("Reading file %s...\n",filename);
 	FILE *INPUTFile;
 	int nbbn = 0;
 	int nbsp = 0;
@@ -101,7 +97,6 @@ void FastPCAdapt(char *filename, int K, double min_AF, int haploid, char *OUTFIL
 		Rprintf("Error, invalid input file.\n");
 	}
 	GenoFile = fopen(filename,"r");
-
 	for (i1=0; i1<nSNP; i1 += blocksize){
 		if (nSNP - i1 < blocksize) blocksize = nSNP - i1;
 		na1 = get_row(Geno, GenoFile, nIND, &mean, SNPSd + i1, sc, blocksize, haploid, min_AF, &low_AF_tot);

@@ -1,6 +1,6 @@
 #' File Converter
 #'
-#' \code{read4pcadapt} converts \code{.vcf} and \code{.ped} files to an appropriate
+#' \code{read.pcadapt} converts \code{.vcf} and \code{.ped} files to an appropriate
 #' type of file readable by \code{pcadapt}. You may find the converted file in the
 #' current directory.
 #'
@@ -10,10 +10,11 @@
 #' \code{pcadapt} format. Supported formats are: \code{ped}, \code{vcf}, \code{lfmm}.
 #'
 #' @useDynLib pcadapt wrapper_converter
+#' @importFrom utils tail
 #'
 #' @export
 #'
-read4pcadapt <- function(input.filename,type){
+read.pcadapt <- function(input.filename,type){
   # input file
   if (class(input.filename) != "character"){
     stop(paste0("File ",input.filename," does not exist."))
@@ -34,15 +35,16 @@ read4pcadapt <- function(input.filename,type){
   }
   split.name <- unlist(unlist(strsplit(input.filename, "[.]")))
   
-  if ((split.name[-1] %in% c("ped","vcf","lfmm","pcadapt")) && (length(split.name) > 1)){
+  if ((tail(split.name, n=1) %in% c("ped","vcf","lfmm","pcadapt")) && (length(split.name) > 1)){
     aux <- NULL
     for (k in (1:(length(split.name)-1))){
-      aux <- paste0(aux,split.name[k])
+      aux <- paste0(aux,split.name[k],".")
     }
-    aux <- paste0(aux,".pcadapt")
-  }
-  else {
-      aux <- input.filename
+    aux <- paste0(aux,"pcadapt")
+  } else if ((tail(split.name, n=1) != "lfmm") && type=="lfmm"){
+    aux <- paste0(input.filename,".pcadapt")
+  } else {
+    aux <- input.filename
   }
   return(aux)
 }
@@ -84,4 +86,52 @@ get.score.color = function(pop){
   return(color.individuals)
 }
 
+#' Retrieve population names
+#'
+#' \code{get.pop.names} retrieves the population names from the population file.
+#'
+#' @param pop a list of integers or strings specifying which population the
+#' individuals belong to.
+#'
+#' @examples
+#' ## see also ?pcadapt for examples
+#'
+#' @importFrom grDevices rainbow
+#'
+#' @keywords internal
+#'
+#' @export
+#'
+get.pop.names = function(pop){
+  aux <- pop[1]
+  idx <- aux
+  for (i in 1:(length(pop))){
+    if (pop[i] != idx){
+      aux <- c(aux,pop[i])
+    }
+    idx <- pop[i]
+  }
+  return(aux)
+}
 
+#' Get the principal component the most associated with a genetic marker
+#'
+#' \code{get.pc} returns a data frame such that each row contains the index of
+#' the genetic marker and the principal component the most correlated with it.
+#'
+#' @param x an object of class `pcadapt` 
+#' @param list a list of integers corresponding to the indices of the markers of interest.
+#'
+#' @examples
+#' ## see also ?pcadapt for examples
+#'
+#' @keywords internal
+#'
+#' @export
+#'
+get.pc <- function(x,list){
+  v <- sapply(list,FUN=function(l){which(x$loadings[l,]^2==max(x$loadings[l,]^2,na.rm=TRUE))})
+  df <- cbind(list,as.numeric(v))
+  colnames(df) <- c("SNP","PC")
+  return(df)
+}

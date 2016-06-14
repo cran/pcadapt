@@ -14,7 +14,7 @@ fast should be processed.}
 
 \item{method}{a character string specifying the method to be used to compute
 the p-values. Four statistics are currently available, \code{"mahalanobis"},
-\code{"communality"}, \code{"euclidean"} and \code{"componentwise"}.}
+\code{"communality"}, and \code{"componentwise"}.}
 
 \item{data.type}{a character string specifying the type of data being read, either
 a \code{genotype} matrix (\code{data.type="genotype"}), or a matrix of allele

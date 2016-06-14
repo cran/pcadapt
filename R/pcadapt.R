@@ -14,21 +14,19 @@
 #'
 #' \code{communality}: the communality statistic measures the proportion of variance explained by the first \code{K} PCs.
 #'
-#' \code{euclidean}: the Euclidean distance between the \code{K} z-scores of each genetic marker and the mean of the \code{K} vectors of z-scores is computed.
-#'
 #' \code{componentwise}: returns a matrix of z-scores.
 #'
-#' To compute p-values, test statistics (\code{stat}) are divided by a genomic inflation factor (\code{gif}) when \code{method="mahalanobis","euclidean"}.
+#' To compute p-values, test statistics (\code{stat}) are divided by a genomic inflation factor (\code{gif}) when \code{method="mahalanobis"}.
 #' When \code{method="communality"}, the test statistic is first multiplied by \code{K} and divided by the percentage of variance explained by the first \code{K} PCs
-#' before accounting for genomic inflation factor. When using \code{method="mahalanobis","communality","euclidean"}, the scaled statistics (\code{chi2_stat}) should follow
+#' before accounting for genomic inflation factor. When using \code{method="mahalanobis","communality"}, the scaled statistics (\code{chi2_stat}) should follow
 #' a chi-squared distribution with \code{K} degrees of freedom. When using \code{method="componentwise"}, the z-scores should follow a chi-squared distribution with \code{1}
 #' degree of freedom. For Pool-seq data, \code{pcadapt} provides p-values based on the Mahalanobis distance for each SNP.
 #'
 #' @param input a character string specifying the name of the file to be processed with \code{pcadapt}.
 #' @param K an integer specifying the number of principal components to retain.
 #' @param method a character string specifying the method to be used to compute
-#' the p-values. Four statistics are currently available, \code{"mahalanobis"},
-#' \code{"communality"}, \code{"euclidean"} and \code{"componentwise"}.
+#' the p-values. Three statistics are currently available, \code{"mahalanobis"},
+#' \code{"communality"}, and \code{"componentwise"}.
 #' @param data.type a character string specifying the type of data being read, either a \code{genotype} matrix (\code{data.type="genotype"}),
 #' or a matrix of allele frequencies (\code{data.type="pool"}).
 #' @param min.maf a value between \code{0} and \code{0.45} specifying the threshold of minor allele frequencies above which p-values are computed.
@@ -52,7 +50,7 @@
 #' @export
 #'
 pcadapt <- function(input,
-                        K=2,
+                        K=5,
                         method="mahalanobis",
                         data.type="genotype",
                         min.maf=0.05,
@@ -66,9 +64,7 @@ pcadapt <- function(input,
   #############################################
   
   if (data.type == "genotype"){
-    
     input.filename <- 1
-    
     # input file
     if ((class(input) == "character") && (!file.exists(input))){
       stop(paste0("File ",input," does not exist."))
@@ -97,11 +93,11 @@ pcadapt <- function(input,
       stop("Invalid argument. Make sure the file exists or that the data is in the workspace.")
     }
     
-    if (class(K) != "numeric" || K <= 0){
+    if (!(class(K) %in% c("numeric","integer")) || K <= 0){
       stop("K has to be a positive integer.")
     }
     
-    if (!(method %in% c("mahalanobis","communality","euclidean","componentwise"))){
+    if (!(method %in% c("mahalanobis","communality","componentwise"))){
       warning("Unknown method. 'mahalanobis' will be used hence.")
       method <- "mahalanobis"
     }
@@ -177,11 +173,12 @@ pcadapt <- function(input,
     finite.list <- which(!is.na(apply(abs(res$loadings),1,sum)))
     if (K>1){
       res$stat[finite.list] <- as.vector(robust::covRob(res$loadings,na.action=na.omit,estim="pairwiseGK")$dist)
+      res$gif <- median(res$stat,na.rm=TRUE)/qchisq(0.5,df=K)
     } else {
       onedcov <- as.vector(MASS::cov.rob(res$loadings[finite.list,1]))
-      res$stat <- (res$zscores[,1]-onedcov$center)^2/onedcov$cov[1]
+      res$gif <- onedcov$cov[1]
+      res$stat <- (res$zscores[,1]-onedcov$center)^2
     }
-    res$gif <- median(res$stat,na.rm=TRUE)/qchisq(0.5,df=K)
     res$chi2.stat <- res$stat/res$gif
     # Compute p-values
     res$pvalues <- compute.pval(res$chi2.stat,K,method="mahalanobis")

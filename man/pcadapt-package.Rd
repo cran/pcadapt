@@ -11,8 +11,8 @@ This package has been developed to provide statistical tools for outlier detecti
 \tabular{ll}{
 Package: \tab pcadapt\cr
 Type: \tab Package\cr
-Version: \tab 3.0\cr
-Date: \tab 2016-04-04\cr
+Version: \tab 3.0.1\cr
+Date: \tab 2016-06-01\cr
 License: \tab (>= 2)\cr
 }
 For an overview of how to use the package, please check the html document provided as a vignette by typing the following command in the \code{R} console:
@@ -25,7 +25,7 @@ Keurcien Luu, Michael G.B. Blum
 Maintainer: Keurcien Luu <keurcien.luu@imag.fr>
 }
 \references{
-Duforet-Frebourg, N., Luu, K., Laval, G., Bazin, E., & Blum, M. G. B. (2015). Detecting genomic signatures of natural selection with principal component analysis: application to the 1000 Genomes data. arXiv preprint arXiv:1504.04543.
+K Luu, E Bazin and MGB Blum. pcadapt: an R package for performing genome scans for selection based on principal component analysis. biorXiv:10.1101/056135 (2016)
 }
 \keyword{ package }
 \seealso{

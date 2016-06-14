@@ -30,14 +30,14 @@ library(pcadapt)
 
 # A. Reading the genotype data
 
-## A.1. The `read4pcadapt` function
+## A.1. The `read.pcadapt` function
 
-You should use the `read4pcadapt` function to convert your genotype file to the `pcadapt` format. `pcadapt` files should have individuals in columns, SNPs in lines, and missing values should be encoded with `9`. `read4pcadapt` converts different types of files to the `pcadapt` format and returns a character string containing the name of the converted file, which should be used as input for the `pcadapt` function.
-The current version of `read4pcadapt` supports three formats: "vcf", "ped", "lfmm" and "pcadapt". For example, assume your genotype file is called "foo.lfmm" and is located in the directory "path_to_directory", use the following command lines:
+You should use the `read.pcadapt` function to convert your genotype file to the `pcadapt` format. `pcadapt` files should have individuals in columns, SNPs in lines, and missing values should be encoded with `9`. `read.pcadapt` converts different types of files to the `pcadapt` format and returns a character string containing the name of the converted file, which should be used as input for the `pcadapt` function.
+The current version of `read.pcadapt` supports three formats: "vcf", "ped", "lfmm" and "pcadapt". For example, assume your genotype file is called "foo.lfmm" and is located in the directory "path_to_directory", use the following command lines:
 
 ```
 path_to_file <- "path_to_directory/foo.lfmm" 
-filename <- read4pcadapt(path_to_file,type="lfmm")
+filename <- read.pcadapt(path_to_file,type="lfmm")
 print(filename)
 ```
 
@@ -51,16 +51,16 @@ path_to_file <- system.file("extdata","geno3pops",package="pcadapt")
 
 ## A.2. How to handle missing values
 
-As stated above, to proceed with the `pcadapt` function, files should be in the right format. Any missing value should be encoded with a `9`. This is automatically done with `read4pcadapt` if it has been used to convert "ped", "vcf" or "lfmm" files.
+As stated above, to proceed with the `pcadapt` function, files should be in the right format. Any missing value should be encoded with a `9`. This is automatically done with `read.pcadapt` if it has been used to convert "ped", "vcf" or "lfmm" files.
 
 # B. Choosing the number `K` of Principal Components
 
-The `pcadapt` function performs two successive tasks. First, PCA is performed on the centered and scaled genotype matrix. The second stage consists of computing test statistics and p-values based on the correlations between SNPs and the first `K` principal components (PCs). To run the function `pcadapt`, the user should specify the `pcadapt` file location `filename` or use the output returned by the function `read4pcadapt`, along with the number `K` of principal components to work with.
+The `pcadapt` function performs two successive tasks. First, PCA is performed on the centered and scaled genotype matrix. The second stage consists of computing test statistics and p-values based on the correlations between SNPs and the first `K` principal components (PCs). To run the function `pcadapt`, the user should specify the `pcadapt` file location `filename` or use the output returned by the function `read.pcadapt`, along with the number `K` of principal components to work with.
 
 To choose `K`, principal component analysis should first be performed with a large enough number of principal components (e.g. `K=20`).
 
 ```
-x <- pcadapt(filename,K=20)
+x <- pcadapt(filename,K=20,transpose=TRUE)
 ```
 
 ```{r,echo=FALSE}
@@ -111,7 +111,7 @@ Looking at population structure beyond `K=2` confirms the results of the scree p
 plot(x,option="scores",i=3,j=4,pop=poplist)
 ```
 
-**NB**: for .ped files, the `plot` function adds colors to the 'score plot' automatically provided that the data have been loaded with `read4pcadapt`.
+**NB**: for .ped files, the `plot` function adds colors to the 'score plot' automatically provided that the data have been loaded with `read.pcadapt`.
  
 # C. Computing the test statistic based on PCA
 
@@ -227,6 +227,14 @@ outliers <- which(qval<alpha)
 print(outliers)
 ```
 
+It may be interesting to know which principal components are actually the most
+correlated with the oulier SNPs. The function `get.pc` allows to achieve that:
+
+```{r}
+snp_pc <- get.pc(x,outliers)
+head(snp_pc)
+```
+
 # F. Pool-seq Data
 
 The package also handles Pool-seq data. A Pool-seq example is provided in the package and can be loaded as follows:
@@ -263,7 +271,7 @@ data <- read.table(path_to_file)
 x <- pcadapt(data,K=2,transpose=TRUE)
 ```
 
-We recommend to check that `pcadapt` has been run correctly by verifying that the number of detected loci, displayed in the console when running `pcadapt`, is correct.
+We recommend to check that `pcadapt` has been run correctly by verifying that the number of detected loci displayed in the console when running `pcadapt`, is correct.
 
 ## G.2 Computing other test statistics
 
@@ -322,6 +330,12 @@ To display the neutral distribution for the component-wise case, the value of `K
 plot(x_cw,option="stat.distribution",K=2)
 ```
 
+## Changelog `pcadapt 3.0.1` (06-01-2016)
+
+- The `read4pcadapt` is now deprecated, it is now called `read.pcadapt`.
+- Using the `pop` option when plotting scores now provides the color legend.
+- The function `get.pc` has been added. See above for details.
+
 ## Changelog `pcadapt 3.0` (04-04-2016)
 
 - All analyses are now included in the `R` package. Users should not use the `C` software PCAdapt fast anymore.
@@ -355,7 +369,6 @@ plot(x_cw,option="stat.distribution",K=2)
 - Bug fix: an issue occurring when reading outputs from PCAdapt has been fixed.
 
 - We mention in the vignette how to use Pool-seq data with the C software PCAdapt fast.
-
 
 ## Changelog `pcadapt 2.0`
 

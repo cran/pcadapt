@@ -330,11 +330,14 @@ To display the neutral distribution for the component-wise case, the value of `K
 plot(x_cw,option="stat.distribution",K=2)
 ```
 
+## Changelog `pcadapt 3.0.2` (06-13-2016)
+
+- The function `get.pc` has been added. For each SNP, it returns the most correlated principal component.
+
 ## Changelog `pcadapt 3.0.1` (06-01-2016)
 
 - The `read4pcadapt` is now deprecated, it is now called `read.pcadapt`.
 - Using the `pop` option when plotting scores now provides the color legend.
-- The function `get.pc` has been added. See above for details.
 
 ## Changelog `pcadapt 3.0` (04-04-2016)
 
@@ -378,7 +381,7 @@ plot(x_cw,option="stat.distribution",K=2)
 
 # Reference
 
-Duforet-Frebourg, N., Luu, K., Laval, G., Bazin, E., & Blum, M. G. (2015). [Detecting genomic signatures of natural selection with principal component analysis: application to the 1000 Genomes data. arXiv preprint arXiv:1504.04543](http://arxiv.org/abs/1504.04543).
+Luu, K., Bazin, E., & Blum, M. G. (2016). [pcadapt: an R package to perform genome scans for selection based on principal component analysis](http://biorxiv.org/content/early/2016/05/30/056135).
  
 
 

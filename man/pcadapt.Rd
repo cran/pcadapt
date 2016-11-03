@@ -6,7 +6,7 @@
 \usage{
 pcadapt(input, K = 5, method = "mahalanobis", data.type = "genotype",
   min.maf = 0.05, ploidy = 2, output.filename = "pcadapt_output",
-  clean.files = TRUE, transpose = FALSE)
+  clean.files = TRUE, transpose, cover.matrix = NULL)
 }
 \arguments{
 \item{input}{a character string specifying the name of the file to be processed with \code{pcadapt}.}
@@ -15,7 +15,7 @@ pcadapt(input, K = 5, method = "mahalanobis", data.type = "genotype",
 
 \item{method}{a character string specifying the method to be used to compute
 the p-values. Three statistics are currently available, \code{"mahalanobis"},
-\code{"communality"}, and \code{"componentwise"}.}
+\code{"communality"} and \code{"componentwise"}.}
 
 \item{data.type}{a character string specifying the type of data being read, either a \code{genotype} matrix (\code{data.type="genotype"}),
 or a matrix of allele frequencies (\code{data.type="pool"}).}
@@ -28,10 +28,9 @@ or a matrix of allele frequencies (\code{data.type="pool"}).}
 
 \item{clean.files}{a logical value indicating whether the auxiliary files should be deleted or not.}
 
-\item{transpose}{a logical value indicating whether the genotype matrix has to be tranposed or not. A genotype
-matrix should be \code{p x n} where \code{p} is the number of genetic markers and \code{n} is the number of individuals.
-If the data contains missing values, please encode missing values as \code{9} or use the function \code{read4pcadapt}
-to format the data.}
+\item{transpose}{deprecated argument.}
+
+\item{cover.matrix}{a matrix specifying the average coverage per genetic marker and per population.}
 }
 \value{
 The returned value \code{x} is an object of class \code{pcadapt}.
@@ -47,7 +46,7 @@ First, a principal component analysis is performed on the scaled and centered ge
 data, the correlation matrix between individuals is computed using only the markers available for each
 pair of individuals. Depending on the specified \code{method}, different test statistics can be used.
 
-\code{mahalanobis} (default): the Mahalanobis distance is computed for each genetic marker using a robust
+\code{mahalanobis} (default): the robust Mahalanobis distance is computed for each genetic marker using a robust
 estimate of both mean and covariance matrix between the \code{K} vectors of z-scores.
 
 \code{communality}: the communality statistic measures the proportion of variance explained by the first \code{K} PCs.
@@ -56,7 +55,7 @@ estimate of both mean and covariance matrix between the \code{K} vectors of z-sc
 
 To compute p-values, test statistics (\code{stat}) are divided by a genomic inflation factor (\code{gif}) when \code{method="mahalanobis"}.
 When \code{method="communality"}, the test statistic is first multiplied by \code{K} and divided by the percentage of variance explained by the first \code{K} PCs
-before accounting for genomic inflation factor. When using \code{method="mahalanobis","communality"}, the scaled statistics (\code{chi2_stat}) should follow
+before accounting for genomic inflation factor. When using \code{method="mahalanobis"} or \code{"communality"}, the scaled statistics (\code{chi2_stat}) should follow
 a chi-squared distribution with \code{K} degrees of freedom. When using \code{method="componentwise"}, the z-scores should follow a chi-squared distribution with \code{1}
 degree of freedom. For Pool-seq data, \code{pcadapt} provides p-values based on the Mahalanobis distance for each SNP.
 }

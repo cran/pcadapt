@@ -1,11 +1,11 @@
 #' pcadapt visualization tool
 #'
 #' \code{plot.pcadapt} is a method designed for objects of class \code{pcadapt}.
-#' It provides a plotting utile for quick visualization of a \code{pcadapt} object.
+#' It provides a plotting utile for quick visualization of \code{pcadapt} objects.
 #' Different options are currently available : \code{"screeplot"}, \code{"scores"}, \code{"stat.distribution"},
 #' \code{"manhattan"} and \code{"qqplot"}.
 #' \code{"screeplot"} shows the decay of the genotype matrix singular values and provides
-#' a figure to guide in the choice of \code{K}.
+#' a figure to help with the choice of \code{K}.
 #' \code{"scores"} plots the projection of the individuals onto the first two principal components.
 #' \code{"stat.distribution"} displays the histogram of the selected test statistics, as well as
 #' the estimated distribution for the neutral SNPs.
@@ -21,7 +21,8 @@
 #' @param j an integer indicating onto which principal component the individuals are projected when the "scores" option is chosen.
 #' Default value is set to \code{2}.
 #' @param pop a list of integers or strings specifying which subpopulation the individuals belong to.
-#' @param threshold for the \code{"qqplot"} option, it displays an additional bar which shows the \code{threshold} percent of SNPs with smallest p-valuesseparates the SNPs with the highest p-values.
+#' @param threshold for the \code{"qqplot"} option, it displays an additional bar which shows the \code{threshold} percent of SNPs with smallest p-values
+#' and separates them from SNPs with higher p-values.
 #'
 #' @examples
 #' ## see ?pcadapt for examples
@@ -122,11 +123,12 @@ score.plotting = function(x,i=1,j=2,pop){
       res.plot <- ggplot2::ggplot(ggdf,aes_string("PC_i","PC_j")) +
         geom_point() 
     } else {
-      ggdf <- as.data.frame(cbind(x$scores[,i],x$scores[,j],pop)) 
-      colnames(ggdf) <- c("PC_i","PC_j","Pop")
+      pop.to.int <- get.score.color(pop)
       popnames <- get.pop.names(pop)
+      ggdf <- as.data.frame(cbind(x$scores[,i],x$scores[,j],pop.to.int)) 
+      colnames(ggdf) <- c("PC_i","PC_j","Pop")
       res.plot <- ggplot2::ggplot(ggdf,aes_string("PC_i","PC_j")) +
-        ggplot2::geom_point(ggplot2::aes(colour=factor(ggdf$Pop)))  +
+        ggplot2::geom_point(aes(colour=factor(ggdf$Pop))) +
         ggplot2::scale_color_hue(name=" ",labels=popnames)
     }
     res.plot <- res.plot + ggplot2::ggtitle(paste0("Projection onto PC",i," and PC",j)) +

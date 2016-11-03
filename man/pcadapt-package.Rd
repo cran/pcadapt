@@ -11,13 +11,13 @@ This package has been developed to provide statistical tools for outlier detecti
 \tabular{ll}{
 Package: \tab pcadapt\cr
 Type: \tab Package\cr
-Version: \tab 3.0.2\cr
-Date: \tab 2016-06-13\cr
+Version: \tab 3.0.3\cr
+Date: \tab 2016-11-03\cr
 License: \tab (>= 2)\cr
 }
 For an overview of how to use the package, please check the html document provided as a vignette by typing the following command in the \code{R} console:
 
-\code{browseVignette("pcadapt")} 
+\code{browseVignettes("pcadapt")} 
 }
 \author{
 Keurcien Luu, Michael G.B. Blum

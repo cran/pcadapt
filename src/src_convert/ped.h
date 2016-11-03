@@ -31,6 +31,16 @@ char* next_token(char* input_file, int i, int j);
 void test_token_ped(char token, int j, int i, char* input_file);
 
 /**
+ * test if a token is correct
+ *
+ * @param token1	character to test
+ * @param j		number of the SNP
+ * @param i		number of the individual
+ * @param input_file	file name
+ */
+void test_token_pcad(char token, int j, int i, char* input_file);
+
+/**
  * read a file of N individuals and M SNPs in ped format
  *
  * @param input_file	input file in ped format 

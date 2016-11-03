@@ -219,6 +219,16 @@ void test_token_ped(char token, int j, int i, char* input_file)
 	}
 }
 
+void test_token_pcad(char token, int j, int i, char* input_file)
+{
+    if (!(token == '0' || token == '1' || token == '2' || token == '3' ||
+          token == '4' || token == '9')) {
+        Rprintf("Error: in file %s, line %d, one allele of SNP %d is '%c'"
+                " and not 0, 1, 2, 3, 4, or 9.\n\n",input_file, i, j,token);
+        error("File conversion aborted.");
+    }
+}
+
 void lfmm2geno(char *input_file, char* output_file, int *N, int *M)
 {
     int *data;
@@ -289,8 +299,8 @@ void fill_line_pcad(int *data, char* szbuff, int M, int i, char* input_file, FIL
     
     while (token1 && token1[0] != EOF && token1[0] != 10 && j < M){
         
-        // test if a token is 0,1,2,3,4, A, C, T, G
-        test_token_ped(token1[0], j+1, i+1, input_file);
+        // test if a token is 0,1,2,3,4,9
+        test_token_pcad(token1[0], j+1, i+1, input_file);
         
         tmp = 0;
         // process genotype

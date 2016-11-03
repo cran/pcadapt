@@ -67,12 +67,12 @@ int nb_cols_vcf(char *file)
 
 	// count the number of elements
 	token = strtok(szbuff, SEP);
-	if (!strcmp(token,"#CHROM")) {
+	if (!strcmp(token,"#CHROM")){
 		while (token) {
 			N ++;
-			token = strtok(NULL, SEP);
+			token = strtok(NULL, "\t");
 		} 
-	} else  {
+	} else {
 		Rprintf("Error: It seems that the line with individual informations is missing.\n");
         error("File conversion aborted.");
 	}
@@ -226,7 +226,7 @@ void fill_line_vcf(char *token, int *allele, int j, int N, char* input_file, FIL
 	}
 
 	// if not the correct number of columns
-	test_column (input_file, input_File, i, j+1, N, token);
+    test_column (input_file, input_File, i, j+1, N, token);
 }
 
 void read_cnv_info(char *token, char **infos, char* szbuff, int j)

@@ -9,6 +9,10 @@ library(pcadapt)#Comment
 path_to_file <- system.file("extdata","geno3pops",package="pcadapt")
 filename <- read.pcadapt(path_to_file,type="lfmm")
 
+## ----  results="hide"----------------------------------------------------
+pool.data <- read.table(system.file("extdata","pool3pops",package="pcadapt"))
+filename <- read.pcadapt(pool.data,type="pool",local.env = TRUE)
+
 ## ----eval=FALSE----------------------------------------------------------
 #  x <- pcadapt(filename,K=20)
 

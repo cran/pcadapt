@@ -2,61 +2,83 @@
 % Please edit documentation in R/pcadapt.R
 \name{pcadapt}
 \alias{pcadapt}
+\alias{pcadapt.pcadapt_matrix}
+\alias{pcadapt.pcadapt_bed}
+\alias{pcadapt.pcadapt_pool}
 \title{Principal Component Analysis for outlier detection}
 \usage{
-pcadapt(input, K = 5, method = "mahalanobis", data.type = "genotype",
-  min.maf = 0.05, ploidy = 2, output.filename = "pcadapt_output",
-  clean.files = TRUE, transpose, cover.matrix = NULL)
+pcadapt(input, K = 2, method = "mahalanobis", min.maf = 0.05,
+  ploidy = 2, LD.clumping = NULL, pca.only = FALSE)
+
+\method{pcadapt}{pcadapt_matrix}(input, K = 2, method = c("mahalanobis",
+  "componentwise"), min.maf = 0.05, ploidy = 2, LD.clumping = NULL,
+  pca.only = FALSE)
+
+\method{pcadapt}{pcadapt_bed}(input, K = 2, method = c("mahalanobis",
+  "componentwise"), min.maf = 0.05, ploidy = 2, LD.clumping = NULL,
+  pca.only = FALSE)
+
+\method{pcadapt}{pcadapt_pool}(input, K = (nrow(input) - 1),
+  method = "mahalanobis", min.maf = 0.05, ploidy = NULL,
+  LD.clumping = NULL, pca.only = FALSE)
 }
 \arguments{
-\item{input}{a character string specifying the name of the file to be processed with \code{pcadapt}.}
+\item{input}{a genotype matrix or a character string specifying the name of 
+the file to be processed with \code{pcadapt}.}
 
 \item{K}{an integer specifying the number of principal components to retain.}
 
 \item{method}{a character string specifying the method to be used to compute
-the p-values. Three statistics are currently available, \code{"mahalanobis"},
-\code{"communality"} and \code{"componentwise"}.}
+the p-values. Two statistics are currently available, \code{"mahalanobis"},
+and \code{"componentwise"}.}
 
-\item{data.type}{a character string specifying the type of data being read, either a \code{genotype} matrix (\code{data.type="genotype"}),
-or a matrix of allele frequencies (\code{data.type="pool"}).}
+\item{min.maf}{a value between \code{0} and \code{0.45} specifying the 
+threshold of minor allele frequencies above which p-values are computed.}
 
-\item{min.maf}{a value between \code{0} and \code{0.45} specifying the threshold of minor allele frequencies above which p-values are computed.}
+\item{ploidy}{Number of trials, parameter of the binomial distribution. 
+Default is 2, which corresponds to diploidy, such as for the human genome.}
 
-\item{ploidy}{an integer specifying the ploidy of the individuals.}
+\item{LD.clumping}{Default is \code{NULL} and doesn't use any SNP thinning.
+If you want to use SNP thinning, provide a named list with parameters 
+\code{size} and \code{thr} which corresponds respectively to the window 
+radius and the squared correlation threshold. A good default value would 
+be \code{list(size = 200, thr = 0.1)}.}
 
-\item{output.filename}{a character string specifying the names of the files created by \code{pcadapt}.}
-
-\item{clean.files}{a logical value indicating whether the auxiliary files should be deleted or not.}
-
-\item{transpose}{deprecated argument.}
-
-\item{cover.matrix}{a matrix specifying the average coverage per genetic marker and per population.}
+\item{pca.only}{a logical value indicating whether PCA results should be 
+returned (before computing any statistic).}
 }
 \value{
 The returned value \code{x} is an object of class \code{pcadapt}.
 }
 \description{
-\code{pcadapt} performs principal component analysis and computes p-values to test for outliers. The test for
-outliers is based on the correlations between genetic variation and the first \code{K} principal components.
-\code{pcadapt} also handles Pool-seq data for which the statistical analysis is
-performed on the genetic markers frequencies. Returns an object of class \code{pcadapt}.
+\code{pcadapt} performs principal component analysis and computes p-values to
+test for outliers. The test for outliers is based on the correlations between
+genetic variation and the first \code{K} principal components. \code{pcadapt}
+also handles Pool-seq data for which the statistical analysis is performed on
+the genetic markers frequencies. Returns an object of class \code{pcadapt}.
 }
 \details{
-First, a principal component analysis is performed on the scaled and centered genotype data. To account for missing
-data, the correlation matrix between individuals is computed using only the markers available for each
-pair of individuals. Depending on the specified \code{method}, different test statistics can be used.
+First, a principal component analysis is performed on the scaled and 
+centered genotype data. To account for missing data, the correlation matrix 
+between individuals is computed using only the markers available for each
+pair of individuals. Depending on the specified \code{method}, different test 
+statistics can be used.
 
-\code{mahalanobis} (default): the robust Mahalanobis distance is computed for each genetic marker using a robust
-estimate of both mean and covariance matrix between the \code{K} vectors of z-scores.
+\code{mahalanobis} (default): the robust Mahalanobis distance is computed for 
+each genetic marker using a robust estimate of both mean and covariance 
+matrix between the \code{K} vectors of z-scores.
 
-\code{communality}: the communality statistic measures the proportion of variance explained by the first \code{K} PCs.
+\code{communality}: the communality statistic measures the proportion of 
+variance explained by the first \code{K} PCs. Deprecated in version 4.0.0.
 
 \code{componentwise}: returns a matrix of z-scores.
 
-To compute p-values, test statistics (\code{stat}) are divided by a genomic inflation factor (\code{gif}) when \code{method="mahalanobis"}.
-When \code{method="communality"}, the test statistic is first multiplied by \code{K} and divided by the percentage of variance explained by the first \code{K} PCs
-before accounting for genomic inflation factor. When using \code{method="mahalanobis"} or \code{"communality"}, the scaled statistics (\code{chi2_stat}) should follow
-a chi-squared distribution with \code{K} degrees of freedom. When using \code{method="componentwise"}, the z-scores should follow a chi-squared distribution with \code{1}
-degree of freedom. For Pool-seq data, \code{pcadapt} provides p-values based on the Mahalanobis distance for each SNP.
+To compute p-values, test statistics (\code{stat}) are divided by a genomic 
+inflation factor (\code{gif}) when \code{method="mahalanobis"}. When using 
+\code{method="mahalanobis"}, the scaled statistics 
+(\code{chi2_stat}) should follow a chi-squared distribution with \code{K} 
+degrees of freedom. When using \code{method="componentwise"}, the z-scores 
+should follow a chi-squared distribution with \code{1} degree of freedom. For 
+Pool-seq data, \code{pcadapt} provides p-values based on the Mahalanobis 
+distance for each SNP.
 }
-

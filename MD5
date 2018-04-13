@@ -1,6 +1,6 @@
-056d534d610cabe4a13adeb0076a70fc *DESCRIPTION
+4f2e334efbc133e2f98b7352669a5020 *DESCRIPTION
 f523d098f5a67df5d57a1b44e0c5e8c2 *NAMESPACE
-5f44fc0629414ae639439528ec1767eb *R/RcppExports.R
+111963e9b3d0f6845cb1963ac62fe14e *R/RcppExports.R
 0a17377b8a237f709ee8f5ade52f4de9 *R/bed2matrix.R
 2e1e2a0854b7ad944c7623967bf8f956 *R/hist-plot.R
 6409b8bf6721874c04d45e5ae95bc6a2 *R/iram.R
@@ -14,10 +14,11 @@ c9ebdd9aeed0d839b158c057fff06968 *R/pcadapt.R
 ac6cd8c5e2f33164c07ff7ad0a714263 *R/scree-plot.R
 4c9832dcf021b8017711b648f48019fd *R/vcfConverter.R
 618ea838b3c60e885b9aa42ea0b2cbd8 *R/writebed.R
+a16b072a670ddba0193ed1d694890d60 *README.md
 ce1cedf48ff4f58342d167640b1c0cae *build/vignette.rds
-cbeaee7f163edbe78fb18173b561c999 *inst/doc/pcadapt.R
-b1d76020ca2783609b1e94405b30e3a1 *inst/doc/pcadapt.Rmd
-ab94761f1f1b07389fec35a3e89d5e47 *inst/doc/pcadapt.html
+89805994834686fdd630d002f115adf4 *inst/doc/pcadapt.R
+8900394bfccda5ee071f245363c655de *inst/doc/pcadapt.Rmd
+42a3df0e83d38cd516123c201f8aadd9 *inst/doc/pcadapt.html
 ef4834e7f9855c5636f699d4fe3ce1ad *inst/extdata/SSMPG2017.rds
 77c27515f59471c0b126a380a0b1914d *inst/extdata/geno3pops.bed
 e920f17b5ffc326bee3f85221ef516fd *inst/extdata/geno3pops.bim
@@ -80,7 +81,7 @@ ebbdb9b0c947b2494df8f57216fb09da *man/vcf_convert.Rd
 40b5c5711687fdb5844a0b13348e50c6 *man/writeBed.Rd
 30fbfce6e06203f988d2f5127eebb253 *src/Makevars
 30fbfce6e06203f988d2f5127eebb253 *src/Makevars.win
-8366f06d52bd64beb6a1620c383a3ffe *src/RcppExports.cpp
+b5f94a235321fd989a9f0b174896ef9a *src/RcppExports.cpp
 52a35b9b3594cf4746a9670b25bd93d9 *src/af.cpp
 e77b5f37f7b19eaa3494e3308a38e3db *src/bed-acc-xptr.cpp
 50a5a8f90c084fb8cde3cc7520724b9a *src/bed2matrix.cpp
@@ -93,8 +94,8 @@ bf27c922cf3524c3754ebf566e66b2e2 *src/vcfUtils.cpp
 69884dd90df384463115ecb2c29b34f8 *src/writebed.cpp
 a6dec124b61941bfefaba69934e2559b *tests/testthat.R
 7c37415d1161aad6b8b4634de8a40ee8 *tests/testthat/test_convert.R
-448942b6f6cd411e966e9195d4ced9d1 *tests/testthat/test_missing.R
+09dd88785127df661df336605b5a79a0 *tests/testthat/test_missing.R
 004a37847b2b64e1624d0fb3f0c8df86 *tests/testthat/test_read.R
 9512f6146adec0e0251ed52422e33025 *tests/testthat/test_version.R
-b1d76020ca2783609b1e94405b30e3a1 *vignettes/pcadapt.Rmd
+8900394bfccda5ee071f245363c655de *vignettes/pcadapt.Rmd
 d41d8cd98f00b204e9800998ecf8427e *vignettes/style.css

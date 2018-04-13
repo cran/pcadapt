@@ -1,8 +1,8 @@
 Package: pcadapt
 Type: Package
 Title: Fast Principal Component Analysis for Outlier Detection
-Version: 4.0.0
-Date: 2018-04-04
+Version: 4.0.1
+Date: 2018-04-06
 Authors@R: c(person("Keurcien", "Luu", role = c("aut"), email = "keurcien.luu@univ-grenoble-alpes.fr"), 
           person("Michael", "Blum", role = c("aut", "cre"), email = "michael.blum@univ-grenoble-alpes.fr"),
           person("Florian", "Privé", role = c("aut"), email = "florian.prive.21@gmail.com"),
@@ -22,16 +22,12 @@ RoxygenNote: 6.0.1
 VignetteBuilder: knitr
 Encoding: UTF-8
 NeedsCompilation: yes
-Packaged: 2018-04-04 16:27:45 UTC; keurcien
+Packaged: 2018-04-13 20:12:53 UTC; mblum
 Author: Keurcien Luu [aut],
   Michael Blum [aut, cre],
   Florian Privé [aut],
   Eric Bazin [ctb],
   Nicolas Duforet-Frebourg [ctb]
 Maintainer: Michael Blum <michael.blum@univ-grenoble-alpes.fr>
-X-CRAN-Comment: Archived on 2018-02-21 for policy violation.
- .
- Misrepresentation of authorship of contents of src_Lapack and
-        src_convert directories.
 Repository: CRAN
-Date/Publication: 2018-04-05 13:54:20 UTC
+Date/Publication: 2018-04-13 20:40:27 UTC

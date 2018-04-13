@@ -6,8 +6,8 @@
 library(pcadapt)#Comment
 
 ## ------------------------------------------------------------------------
-path_to_file <- system.file("extdata", "geno3pops.lfmm", package = "pcadapt")
-filename <- read.pcadapt(path_to_file, type = "lfmm")
+path_to_file <- system.file("extdata", "geno3pops.bed", package = "pcadapt")
+filename <- read.pcadapt(path_to_file, type = "bed")
 
 ## ------------------------------------------------------------------------
 x <- pcadapt(input = filename, K = 20) 
@@ -116,8 +116,8 @@ print(aux[,2])
 #  plot(res, option = "screeplot")
 
 ## ------------------------------------------------------------------------
-path_to_file <- system.file("extdata", "geno3pops.lfmm", package = "pcadapt")
-filename <- read.pcadapt(path_to_file, type = "lfmm")
+path_to_file <- system.file("extdata", "geno3pops.bed", package = "pcadapt")
+filename <- read.pcadapt(path_to_file, type = "bed")
 x_cw <- pcadapt(filename, K = 2, method = "componentwise")
 summary(x_cw$pvalues)
 

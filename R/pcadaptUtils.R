@@ -1,7 +1,5 @@
 ################################################################################
 
-CODE_012 <- rep(NA_integer_, 256); CODE_012[49:51] <- 0:2
-
 #' Population colorization
 #'
 #' \code{get.score.color} allows the user to display individuals of the same
@@ -78,17 +76,14 @@ get.pop.names = function(pop){
 #' @param x an object of class `pcadapt`. 
 #' @param list a list of integers corresponding to the indices of the markers of interest.
 #'
-#' @examples
-#' ## see also ?pcadapt for examples
-#'
 #' @export
 #'
-get.pc = function(x, list){
+get.pc <- function(x, list) {
   rem.na <- which(!is.na(x$zscores[list, 1]))
   v <- vector(mode = "numeric", length = length(list))
-  v[rem.na] <- sapply(list[rem.na], FUN = function(h){which(x$zscores[h, ]^2 == max(x$zscores[h, ]^2, na.rm = TRUE))})
-  df <- data.frame(SNP = list, PC = v)
-  return(df)
+  v[rem.na] <- sapply(list[rem.na], FUN = function(h) {
+    which(x$zscores[h, ]^2 == max(x$zscores[h, ]^2, na.rm = TRUE))})
+  data.frame(SNP = list, PC = v)
 }
 
 ################################################################################

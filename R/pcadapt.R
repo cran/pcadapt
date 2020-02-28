@@ -13,10 +13,8 @@ NULL
 #' the genetic markers frequencies. Returns an object of class \code{pcadapt}.
 #'
 #' @details First, a principal component analysis is performed on the scaled and 
-#' centered genotype data. To account for missing data, the correlation matrix 
-#' between individuals is computed using only the markers available for each
-#' pair of individuals. Depending on the specified \code{method}, different test 
-#' statistics can be used.
+#' centered genotype data. Depending on the specified \code{method}, different 
+#' test  statistics can be used.
 #'
 #' \code{mahalanobis} (default): the robust Mahalanobis distance is computed for 
 #' each genetic marker using a robust estimate of both mean and covariance 
@@ -36,25 +34,26 @@ NULL
 #' Pool-seq data, \code{pcadapt} provides p-values based on the Mahalanobis 
 #' distance for each SNP.
 #'
-#' @param input a genotype matrix or a character string specifying the name of 
-#' the file to be processed with \code{pcadapt}.
+#' @param input The output of function \code{read.pcadapt}.
 #' @param K an integer specifying the number of principal components to retain.
 #' @param method a character string specifying the method to be used to compute
-#' the p-values. Two statistics are currently available, \code{"mahalanobis"},
-#' and \code{"componentwise"}.
-#' @param min.maf a value between \code{0} and \code{0.45} specifying the 
-#' threshold of minor allele frequencies above which p-values are computed.
+#'   the p-values. Two statistics are currently available, \code{"mahalanobis"},
+#'   and \code{"componentwise"}.
+#' @param min.maf Threshold of minor allele frequencies above which p-values are 
+#'   computed. Default is \code{0.05}.
 #' @param LD.clumping Default is \code{NULL} and doesn't use any SNP thinning.
 #'   If you want to use SNP thinning, provide a named list with parameters 
-#'   \code{size} and \code{thr} which corresponds respectively to the window 
+#'   \code{$size} and \code{$thr} which corresponds respectively to the window 
 #'   radius and the squared correlation threshold. A good default value would 
-#'   be \code{list(size = 200, thr = 0.1)}.
+#'   be \code{list(size = 500, thr = 0.1)}.
 #' @param pca.only a logical value indicating whether PCA results should be 
 #'   returned (before computing any statistic).
 #' @param ploidy Number of trials, parameter of the binomial distribution. 
 #'   Default is 2, which corresponds to diploidy, such as for the human genome.
+#' @param tol Convergence criterion of \code{RSpectra::svds()}. 
+#'   Default is \code{1e-4}.
 #' 
-#' @return The returned value \code{x} is an object of class \code{pcadapt}.
+#' @return The returned value is an object of class \code{pcadapt}.
 #' 
 #' @useDynLib pcadapt
 #' 
@@ -68,7 +67,8 @@ pcadapt <- function(input,
                     min.maf = 0.05, 
                     ploidy = 2,
                     LD.clumping = NULL,
-                    pca.only = FALSE) {
+                    pca.only = FALSE,
+                    tol = 1e-4) {
   
   if (missing(input)) {
     appDir <- system.file("shiny-examples/app-pcadapt", package = "pcadapt")
@@ -77,7 +77,7 @@ pcadapt <- function(input,
     }
     shiny::runApp(appDir, display.mode = "normal")  
   } else {
-    if (grepl("^pcadapt_", class(input))) {
+    if (any(grepl("^pcadapt_", class(input)))) {
       UseMethod("pcadapt")
     } else {
       stop("Remember to always use read.pcadapt() before using pcadapt().")
@@ -93,9 +93,10 @@ pcadapt.pcadapt_matrix <- function(input,
                                    min.maf = 0.05, 
                                    ploidy = 2,
                                    LD.clumping = NULL,
-                                   pca.only = FALSE) {
+                                   pca.only = FALSE,
+                                   tol = 1e-4) {
   
-  pcadapt0(input, K, match.arg(method), min.maf, ploidy, LD.clumping, pca.only)
+  pcadapt0(input, K, match.arg(method), min.maf, ploidy, LD.clumping, pca.only, tol)
 }
 
 #' @rdname pcadapt
@@ -106,14 +107,15 @@ pcadapt.pcadapt_bed <- function(input,
                                 min.maf = 0.05, 
                                 ploidy = 2,
                                 LD.clumping = NULL,
-                                pca.only = FALSE) {
+                                pca.only = FALSE, 
+                                tol = 1e-4) {
   
   # File mapping
   n <- attr(input, "n")
   p <- attr(input, "p")
   xptr <- structure(bedXPtr(input, n, p), n = n, p = p, class = "xptr_bed")
   
-  pcadapt0(xptr, K, match.arg(method), min.maf, ploidy, LD.clumping, pca.only)
+  pcadapt0(xptr, K, match.arg(method), min.maf, ploidy, LD.clumping, pca.only, tol)
 }
 
 #' @rdname pcadapt
@@ -124,7 +126,8 @@ pcadapt.pcadapt_pool <- function(input,
                                  min.maf = 0.05,
                                  ploidy = NULL,
                                  LD.clumping = NULL,
-                                 pca.only = FALSE) {
+                                 pca.only = FALSE,
+                                 tol) {
   
   w <- matrix(NA_real_, nrow = ncol(input), ncol = K)
   
@@ -148,9 +151,7 @@ pcadapt.pcadapt_pool <- function(input,
   }
   
   w[pass, ] <- obj.pca$v[, 1:K, drop = FALSE]
-  res <- get_statistics(w, 
-                        method = method, 
-                        pass = pass)
+  res <- get_statistics(w, method = method, pass = pass)
 
   structure(
     list(
@@ -186,8 +187,10 @@ pcadapt.pcadapt_pool <- function(input,
 #' associated p-values.
 #' 
 #' @importFrom stats median na.omit pchisq qchisq
+#' 
+#' @keywords internal
 #'
-get_statistics = function(zscores, method, pass) {
+get_statistics <- function(zscores, method, pass) {
   
   nSNP <- nrow(zscores)
   K <- ncol(zscores)
@@ -196,9 +199,7 @@ get_statistics = function(zscores, method, pass) {
     if (K == 1) {
       res[pass] <- (zscores[pass] - median(zscores[pass]))^2 
     } else if (K > 1) {
-      # covRob_cpp(zscores[pass, ])
-      res[pass] <- robust::covRob(zscores, na.action = na.omit, 
-                                  estim = "pairwiseGK")$dist
+      res[pass] <- bigutilsr::dist_ogk(zscores[pass, ])
     }
     gif <- median(res, na.rm = TRUE) / qchisq(0.5, df = K)
     res.gif <- res / gif
@@ -225,7 +226,7 @@ get_statistics = function(zscores, method, pass) {
 
 ################################################################################
 
-pcadapt0 <- function(input, K, method, min.maf, ploidy, LD.clumping, pca.only) {
+pcadapt0 <- function(input, K, method, min.maf, ploidy, LD.clumping, pca.only, tol) {
   
   # Test arguments and init
   if (!(class(K) %in% c("numeric", "integer")) || K <= 0)
@@ -238,7 +239,8 @@ pcadapt0 <- function(input, K, method, min.maf, ploidy, LD.clumping, pca.only) {
   obj.pca <- iram_and_reg(input, K = K, 
                           min.maf = min.maf, 
                           ploidy = ploidy,
-                          LD.clumping = LD.clumping)
+                          LD.clumping = LD.clumping, 
+                          tol = tol)
   if (pca.only) return(obj.pca)
   
   res <- get_statistics(obj.pca$zscores, 

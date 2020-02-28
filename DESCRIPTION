@@ -1,33 +1,34 @@
 Package: pcadapt
 Type: Package
 Title: Fast Principal Component Analysis for Outlier Detection
-Version: 4.1.0
-Date: 2019-02-26
-Authors@R: c(person("Keurcien", "Luu", role = c("aut"), email = "keurcien.luu@univ-grenoble-alpes.fr"), 
-          person("Michael", "Blum", role = c("aut", "cre"), email = "michael.blum@univ-grenoble-alpes.fr"),
-          person("Florian", "Privé", role = c("aut"), email = "florian.prive.21@gmail.com"),
-          person("Eric", "Bazin", role = c("ctb"), email = "eric.bazin@univ-grenoble-alpes.fr"),
-          person("Nicolas", "Duforet-Frebourg", role = c("ctb")))
+Version: 4.3.1
+Date: 2020-01-31
+Authors@R: c(
+    person("Keurcien", "Luu", role = c("aut")), 
+    person("Michael", "Blum", role = c("aut")),
+    person("Florian", "Privé", role = c("aut", "cre"), 
+           email = "florian.prive.21@gmail.com"),
+    person("Eric", "Bazin", role = c("ctb")),
+    person("Nicolas", "Duforet-Frebourg", role = c("ctb")))
 Description: Methods to detect genetic markers involved in biological
     adaptation. 'pcadapt' provides statistical tools for outlier detection based on
     Principal Component Analysis. Implements the method described in (Luu, 2016)
     <DOI:10.1111/1755-0998.12592>.
 License: GPL (>= 2)
-Imports: data.table, ggplot2, magrittr, mmapcharr (>= 0.3), plotly,
-        Rcpp (>= 0.12.8), robust, RSpectra, vcfR
+Imports: bigutilsr (>= 0.3), data.table, ggplot2, magrittr, mmapcharr
+        (>= 0.3), Rcpp (>= 0.12.8), RSpectra
 LinkingTo: Rcpp, rmio, mmapcharr
 LazyData: TRUE
-Suggests: knitr, rmarkdown, testthat, shiny, covr
-RoxygenNote: 6.1.0
-VignetteBuilder: knitr
+Suggests: covr, knitr, plotly, rmarkdown, shiny, testthat, vcfR
+RoxygenNote: 7.0.2
 Encoding: UTF-8
 NeedsCompilation: yes
-Packaged: 2019-02-26 12:41:08 UTC; privef
+Packaged: 2020-02-28 17:51:47 UTC; au639593
 Author: Keurcien Luu [aut],
-  Michael Blum [aut, cre],
-  Florian Privé [aut],
+  Michael Blum [aut],
+  Florian Privé [aut, cre],
   Eric Bazin [ctb],
   Nicolas Duforet-Frebourg [ctb]
-Maintainer: Michael Blum <michael.blum@univ-grenoble-alpes.fr>
+Maintainer: Florian Privé <florian.prive.21@gmail.com>
 Repository: CRAN
-Date/Publication: 2019-02-27 13:20:03 UTC
+Date/Publication: 2020-02-28 22:50:09 UTC

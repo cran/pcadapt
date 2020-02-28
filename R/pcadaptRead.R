@@ -3,15 +3,16 @@
 #' File Converter
 #'
 #' \code{read.pcadapt} converts genotype matrices or files to an appropriate
-#'   format readable by \code{pcadapt}. For a file as input, you can return 
-#'   either a matrix or convert it in bed/bim/fam files. For a matrix as input,
-#'   this return a matrix. 
+#'   format readable by \code{pcadapt}. For a file as input, you can choose to
+#'   return either a matrix or convert it in bed/bim/fam files. 
+#'   For a matrix as input, this returns a matrix. 
 #'
-#' @param input a genotype matrix or a character string specifying the name of 
-#'   the file to be converted.
-#' @param type a character string specifying the type of data to be converted 
+#' @param input A genotype matrix or a character string specifying the name of 
+#'   the file to be converted. Matrices should use NAs to encode missing values. 
+#'   To encode missing values in 'pcadapt' and 'lfmm' files, 9s should be used.
+#' @param type A character string specifying the type of data to be converted 
 #'   from. Converters from 'vcf' and 'ped' formats are not maintained anymore;
-#'   if you have any issue with those, please use PLINK 1.9 to convert them
+#'   if you have any issue with those, please use PLINK >= 1.9 to convert them
 #'   to the 'bed' format.
 #' @param type.out Either a bed file or a standard R matrix. 
 #'   If the input is a matrix, then the output is automatically a matrix 
@@ -37,7 +38,7 @@ read.pcadapt <- function(input,
                          ## only when type == "vcf"
                          allele.sep = c("/", "|"), 
                          ## deprecated arguments
-                         pop.sizes, ploidy, local.env, blocksize){
+                         pop.sizes, ploidy, local.env, blocksize) {
   
   # In version 3.1.0, arguments 'local.env' and 'blocksize' have been removed
   if (!missing(local.env)) warning("Argument 'local.env' is deprecated.")
@@ -48,9 +49,10 @@ read.pcadapt <- function(input,
   
   type <- match.arg(type)
   
-  if (class(input) == "character") {
+  if (any(class(input) == "character")) {
     file2other(input, type, match.arg(type.out), match.arg(allele.sep))
-  } else if (class(input) %in% c("matrix", "data.frame", "array")) {
+  } else if (any(class(input) %in% c("matrix", "data.frame", "array"))) {
+    if (!missing(type.out)) warning("Argument 'type.out' is not used with matrices.")
     matrix2other(input, type)
   } else {
     stop("Input should be a file path or a matrix-like object.")
@@ -64,7 +66,7 @@ check_file_size <- function(file) {
   if (file.size(file) > 2e9) {
     stop(paste0("It seems that the input file is quite large.\n",
                 "For large 'vcf' or 'ped' files, ", 
-                "please use PLINK (> 1.9) to convert them in 'bed'."))
+                "please use PLINK (>= 1.9) to convert them to 'bed' format."))
   }
 }
 
@@ -80,11 +82,13 @@ file2other <- function(input, type.in, type.out, allele.sep) {
   is.pcadapt <- TRUE
   if (type.in == "ped") {
     check_file_size(input)
+    warning("Converter ped to pcadapt is deprecated. Please use PLINK for conversion to bed (and QC).")
     tmp <- tempfile(fileext = ".pcadapt")
     ped2pcadapt(input = input, output = tmp)
     input <- tmp
   } else if (type.in == "vcf") {
     check_file_size(input)
+    warning("Converter vcf to pcadapt is deprecated. Please use PLINK for conversion to bed (and QC).")
     tmp <- tempfile(fileext = ".pcadapt")
     vcf2pcadapt(input = input, output = tmp, allele.sep = allele.sep)
     input <- tmp
@@ -101,11 +105,12 @@ file2other <- function(input, type.in, type.out, allele.sep) {
   }
   
   if (type.out == "matrix") {
-    #mmap <- mmapcharr::mmapchar(input, code = mmapcharr:::CODE_012)
     mmap <- mmapcharr::mmapchar(input, code = CODE_012)
     structure(`if`(is.pcadapt, t(mmap[]), mmap[]), class = "pcadapt_matrix")
-  } else { # bed
+  } else if (type.out == "bed") {
     writeBed(input, is.pcadapt)
+  } else {
+    stop("This 'type.out' is not supported.")
   }
 }
 
@@ -124,6 +129,12 @@ matrix2other <- function(input, type.in) {
     return(structure(as.matrix(input), class = "pcadapt_pool"))
   } else {
     stop("Incorrect type.in for matrices.")
+  }
+  
+  if (nrow(res) > ncol(res)) {
+    warning(sprintf("%s\n  %s",
+                    "You have more individuals than SNPs.",
+                    "Are you sure of the type of your matrix? (pcadapt/lfmm)"))
   }
   
   storage.mode(res) <- "integer"

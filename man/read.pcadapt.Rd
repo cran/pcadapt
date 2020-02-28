@@ -4,17 +4,25 @@
 \alias{read.pcadapt}
 \title{File Converter}
 \usage{
-read.pcadapt(input, type = c("pcadapt", "lfmm", "vcf", "bed", "ped",
-  "pool", "example"), type.out = c("bed", "matrix"),
-  allele.sep = c("/", "|"), pop.sizes, ploidy, local.env, blocksize)
+read.pcadapt(
+  input,
+  type = c("pcadapt", "lfmm", "vcf", "bed", "ped", "pool", "example"),
+  type.out = c("bed", "matrix"),
+  allele.sep = c("/", "|"),
+  pop.sizes,
+  ploidy,
+  local.env,
+  blocksize
+)
 }
 \arguments{
-\item{input}{a genotype matrix or a character string specifying the name of 
-the file to be converted.}
+\item{input}{A genotype matrix or a character string specifying the name of 
+the file to be converted. Matrices should use NAs to encode missing values. 
+To encode missing values in 'pcadapt' and 'lfmm' files, 9s should be used.}
 
-\item{type}{a character string specifying the type of data to be converted 
+\item{type}{A character string specifying the type of data to be converted 
 from. Converters from 'vcf' and 'ped' formats are not maintained anymore;
-if you have any issue with those, please use PLINK 1.9 to convert them
+if you have any issue with those, please use PLINK >= 1.9 to convert them
 to the 'bed' format.}
 
 \item{type.out}{Either a bed file or a standard R matrix. 
@@ -36,7 +44,7 @@ So, this argument is only useful for \code{type = "vcf"}.}
 }
 \description{
 \code{read.pcadapt} converts genotype matrices or files to an appropriate
-  format readable by \code{pcadapt}. For a file as input, you can return 
-  either a matrix or convert it in bed/bim/fam files. For a matrix as input,
-  this return a matrix.
+  format readable by \code{pcadapt}. For a file as input, you can choose to
+  return either a matrix or convert it in bed/bim/fam files. 
+  For a matrix as input, this returns a matrix.
 }

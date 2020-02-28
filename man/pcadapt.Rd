@@ -7,24 +7,52 @@
 \alias{pcadapt.pcadapt_pool}
 \title{Principal Component Analysis for outlier detection}
 \usage{
-pcadapt(input, K = 2, method = "mahalanobis", min.maf = 0.05,
-  ploidy = 2, LD.clumping = NULL, pca.only = FALSE)
+pcadapt(
+  input,
+  K = 2,
+  method = "mahalanobis",
+  min.maf = 0.05,
+  ploidy = 2,
+  LD.clumping = NULL,
+  pca.only = FALSE,
+  tol = 1e-04
+)
 
-\method{pcadapt}{pcadapt_matrix}(input, K = 2,
-  method = c("mahalanobis", "componentwise"), min.maf = 0.05,
-  ploidy = 2, LD.clumping = NULL, pca.only = FALSE)
+\method{pcadapt}{pcadapt_matrix}(
+  input,
+  K = 2,
+  method = c("mahalanobis", "componentwise"),
+  min.maf = 0.05,
+  ploidy = 2,
+  LD.clumping = NULL,
+  pca.only = FALSE,
+  tol = 1e-04
+)
 
-\method{pcadapt}{pcadapt_bed}(input, K = 2, method = c("mahalanobis",
-  "componentwise"), min.maf = 0.05, ploidy = 2, LD.clumping = NULL,
-  pca.only = FALSE)
+\method{pcadapt}{pcadapt_bed}(
+  input,
+  K = 2,
+  method = c("mahalanobis", "componentwise"),
+  min.maf = 0.05,
+  ploidy = 2,
+  LD.clumping = NULL,
+  pca.only = FALSE,
+  tol = 1e-04
+)
 
-\method{pcadapt}{pcadapt_pool}(input, K = (nrow(input) - 1),
-  method = "mahalanobis", min.maf = 0.05, ploidy = NULL,
-  LD.clumping = NULL, pca.only = FALSE)
+\method{pcadapt}{pcadapt_pool}(
+  input,
+  K = (nrow(input) - 1),
+  method = "mahalanobis",
+  min.maf = 0.05,
+  ploidy = NULL,
+  LD.clumping = NULL,
+  pca.only = FALSE,
+  tol
+)
 }
 \arguments{
-\item{input}{a genotype matrix or a character string specifying the name of 
-the file to be processed with \code{pcadapt}.}
+\item{input}{The output of function \code{read.pcadapt}.}
 
 \item{K}{an integer specifying the number of principal components to retain.}
 
@@ -32,23 +60,26 @@ the file to be processed with \code{pcadapt}.}
 the p-values. Two statistics are currently available, \code{"mahalanobis"},
 and \code{"componentwise"}.}
 
-\item{min.maf}{a value between \code{0} and \code{0.45} specifying the 
-threshold of minor allele frequencies above which p-values are computed.}
+\item{min.maf}{Threshold of minor allele frequencies above which p-values are 
+computed. Default is \code{0.05}.}
 
 \item{ploidy}{Number of trials, parameter of the binomial distribution. 
 Default is 2, which corresponds to diploidy, such as for the human genome.}
 
 \item{LD.clumping}{Default is \code{NULL} and doesn't use any SNP thinning.
 If you want to use SNP thinning, provide a named list with parameters 
-\code{size} and \code{thr} which corresponds respectively to the window 
+\code{$size} and \code{$thr} which corresponds respectively to the window 
 radius and the squared correlation threshold. A good default value would 
-be \code{list(size = 200, thr = 0.1)}.}
+be \code{list(size = 500, thr = 0.1)}.}
 
 \item{pca.only}{a logical value indicating whether PCA results should be 
 returned (before computing any statistic).}
+
+\item{tol}{Convergence criterion of \code{RSpectra::svds()}. 
+Default is \code{1e-4}.}
 }
 \value{
-The returned value \code{x} is an object of class \code{pcadapt}.
+The returned value is an object of class \code{pcadapt}.
 }
 \description{
 \code{pcadapt} performs principal component analysis and computes p-values to
@@ -59,10 +90,8 @@ the genetic markers frequencies. Returns an object of class \code{pcadapt}.
 }
 \details{
 First, a principal component analysis is performed on the scaled and 
-centered genotype data. To account for missing data, the correlation matrix 
-between individuals is computed using only the markers available for each
-pair of individuals. Depending on the specified \code{method}, different test 
-statistics can be used.
+centered genotype data. Depending on the specified \code{method}, different 
+test  statistics can be used.
 
 \code{mahalanobis} (default): the robust Mahalanobis distance is computed for 
 each genetic marker using a robust estimate of both mean and covariance 

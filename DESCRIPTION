@@ -1,8 +1,8 @@
 Package: pcadapt
 Type: Package
 Title: Fast Principal Component Analysis for Outlier Detection
-Version: 4.3.5
-Date: 2023-08-29
+Version: 4.4.0
+Date: 2024-09-24
 Authors@R: c(
     person("Keurcien", "Luu", role = "aut"), 
     person("Michael", "Blum", role = "aut"),
@@ -26,7 +26,7 @@ Language: en-US
 URL: https://github.com/bcm-uga/pcadapt
 BugReports: https://github.com/bcm-uga/pcadapt/issues
 NeedsCompilation: yes
-Packaged: 2023-08-29 13:43:33 UTC; au639593
+Packaged: 2024-09-24 12:52:57 UTC; au639593
 Author: Keurcien Luu [aut],
   Michael Blum [aut],
   Florian Privé [aut, cre],
@@ -34,4 +34,4 @@ Author: Keurcien Luu [aut],
   Nicolas Duforet-Frebourg [ctb]
 Maintainer: Florian Privé <florian.prive.21@gmail.com>
 Repository: CRAN
-Date/Publication: 2023-08-29 14:30:02 UTC
+Date/Publication: 2024-09-24 13:10:05 UTC

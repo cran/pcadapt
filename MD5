@@ -1,13 +1,13 @@
-2473dcfcfec1dd8998769aaadef55b2d *DESCRIPTION
-15745d827961c41bc26d3ab4cfced7a0 *NAMESPACE
+2290533548acbd1d3935984296d1394c *DESCRIPTION
+7b33afd1af972803df0b6b6110f88c23 *NAMESPACE
 1d3dd7f4e02ee2f3451bb060c1768384 *NEWS.md
 a63e4c83e912aa87d6e0600aa464e14a *R/RcppExports.R
 d36f358ce5534e9a23ffb7e50b96aa9c *R/bed2matrix.R
-af042936ef7e987a8408c599511641f6 *R/iram.R
+dbe5a805fbc6369af2bf1b0472d7bb0c *R/iram.R
 e0c62684bff50a2e3134a75cc78ccb0c *R/pcadapt.R
 1b7234990bdfd451bbfad6cd2791bddc *R/pcadaptRead.R
 df08de38a9bf9da3b841ebe1c68082ad *R/pcadaptUtils.R
-5b9f7202e92747a13aa5724daa9f28db *R/plotUtils.R
+2c365170dfa92e19c2f44b73aecbbc55 *R/plotUtils.R
 8e9c345d5f1e790a25e6d0344bdf54ee *R/vcfConverter.R
 c2e8ff7f3bbe33e5d50ce393e402a87f *R/writebed.R
 7a0e6d1519d2e9037fa5b4bce0ed4647 *README.md
@@ -65,7 +65,7 @@ ce0cd0bf51dff1549b03bb08acb8f178 *man/get.pc.Rd
 e6e7517cefab74e1540fe3f265990439 *man/manhattan_plot.Rd
 a5aa1764dd16a10d61bc52154f15e083 *man/pcadapt.Rd
 1c3ad2e76149ce939d6b38ea00f7daee *man/ped2pcadapt.Rd
-b6b3d9e4466f38e0972d9ed6fb8ef52d *man/plot.pcadapt.Rd
+3a426e66e1030cdaf638c40abd3be520 *man/plot.pcadapt.Rd
 4d3c6cca7e889b2df382aebf27ffd1dc *man/print_convert.Rd
 05bb01604d6fef5918cb0462c50d8d52 *man/qq_plot.Rd
 53e3525299f7457f7a989a1491d46c3c *man/read.pcadapt.Rd
